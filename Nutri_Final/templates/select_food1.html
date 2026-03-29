@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="static\css\style1.css">
+  <title>Diet Recommender</title>
+  <style>
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Montserrat", sans-serif
+    }
+
+    .w3-row-padding img {
+      margin-bottom: 12px
+    }
+
+
+
+
+    table,
+    tr,
+    th,
+    td {
+      border: 1px solid black;
+      border-collapse: collapse;
+    }
+
+
+    tr:nth-child(even) {
+      background-color: rgba(150, 212, 212, 0.4);
+    }
+
+    th:nth-child(even),
+    td:nth-child(even) {
+      background-color: rgba(150, 212, 212, 0.4);
+    }
+  </style>
+</head>
+
+<body style="max-width:1600px;">
+  <div class="w3-top">
+    <div class="w3-bar w3-yellow w3-card">
+      <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)"
+        onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+      <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Home</a>
+      <a href="{{ url_for('U_Diet_recommender')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Diet
+        Recommender</a>
+      <a href="{{ url_for('U_Discover')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Discover</a>
+      <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Food
+        Scanner</a>
+      <a href="{{ url_for('U_Settings')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Settings</a>
+      <!--<div class="w3-dropdown-hover w3-hide-small">
+              <button class="w3-padding-large w3-button" title="More">MORE <i class="fa fa-caret-down"></i></button>     
+              <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                <a href="#" class="w3-bar-item w3-button">Merchandise</a> 
+                <a href="#" class="w3-bar-item w3-button">Extras</a>
+                <a href="#" class="w3-bar-item w3-button">Media</a>
+              </div>
+            </div>
+          -->
+    </div>
+  </div>
+
+  <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+  <div id="navDemo" class="w3-bar-block w3-white w3-border w3-hide w3-hide-large w3-hide-medium w3-top"
+    style="margin-top:46px">
+    <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">Home</a>
+    <a href="{{ url_for('U_Diet_recommender')}}" class="w3-bar-item w3-button w3-padding-large"
+      onclick="myFunction()">Diet Recommender</a>
+    <a href="{{ url_for('U_Discover')}}" class="w3-bar-item w3-button w3-padding-large"
+      onclick="myFunction()">Discover</a>
+    <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">Food
+      Scanner</a>
+    <a href="{{ url_for('U_Settings')}}" class="w3-bar-item w3-button w3-padding-large"
+      onclick="myFunction()">Settings</a>
+  </div>
+  <section style="width: 100%; height: 7vh;"></section>
+  <br>
+  <div class="w3-card" style="margin-left:20px; margin-right: 20px;margin-top: 20px;">
+    <!--<span class="w3-button w3-purple w3-round-medium" style="margin-left:30px;"><a href="{{ url_for('new1') }}">Add User</a></span>-->
+    <!-- !PAGE CONTENT! -->
+
+    <section>
+      <h1 class="w3-center" style="padding: 10px;"><b>DIET RECOMMENDER</b></h1>
+      <div  class="w3-container w3-center" >
+
+        <div id="warn1" class="w3-panel w3-pale-red w3-display-container" style="display: none;" >
+            <span onclick="this.parentElement.style.display='none'"
+            class="w3-button w3-large w3-display-topright">&times;</span>
+            <h3>Warning!</h3>
+            <p>"All Meal Types Have Been Consumed."</p>
+          </div>
+
+
+        </div>
+
+        
+
+    </section>
+    <div class="w3-main w3-card scrollmenu " style="margin-left:30px; margin-right: 30px;margin-top: 30px; ">
+
+      <table class="w3-center w3-main w3-card"
+        style="margin-left:12%; margin-right: 30px;margin-bottom: 30px;margin-top: 30px;">
+        <thead>
+          <tr>
+            <th>ITEM</th>
+            <th>STANDARD WEIGHT(g)</th>
+            <th>CALORIES PER 100g</th>
+            <th>MEAL TYPE</th>
+            <th>SUMMARY</th>
+
+
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for menus in menu %}
+          {% for user in users %}
+          {% if user.fname==current_user.fname%}
+          {% if (user.allergy1!=menus.allergen1) %}
+          {% if (user.allergy1!=menus.allergen2) %}
+          {% if (user.allergy2!=menus.allergen1) %}
+          {% if (user.allergy2!=menus.allergen2) %}
+          {% if (user.health_issues1!=menus.risk1) %}
+          {% if (user.health_issues1!=menus.risk2) %}
+          <tr>
+            <form action='/confirm' method="post">
+              <td> <img src="{{menus.imgpath}}" style="width:200px; "></td>
+              <td>{{ menus.stdwt }}</td>
+              <td>{{ menus.cal100 }}</td>
+              <td> <input type="text" id="type" name="type" value="{{menus.meal}}" readonly><br><br></td>
+
+
+
+              <td>
+
+                <label for="item">Item:</label>
+                <input type="text" id="item" name="item" value="{{menus.item}}" readonly><br><br>
+                <label for="cal">Calories:</label>
+                <input type="text" id="cal" name="cal" value="{{menus.cal}}" readonly><br><br>
+              </td>
+              <td><input onclick="return check1()" type="submit" value="Submit"></td>
+            </form>
+
+
+
+          </tr>
+
+
+
+
+          {% endif %}{% endif %}{% endif %}{% endif %}
+          {% endif %}{% endif %}{% endif %}
+          {% endfor %}
+          {% endfor %}
+
+
+
+
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+
+  {% if (quota[-1].br_item!="" and quota[-1].lu_item!="" and quota[-1].di_item!="") %}
+  <Script>
+    var  flag1=1;
+  </Script>
+  {% else %}
+  <Script>
+    var flag2=0;
+ </Script>
+  {% endif %}
+
+
+
+
+
+  <script>
+    function myFunction() {
+      var x = document.getElementById("navDemo");
+      if (x.className.indexOf("w3-show") == -1) {
+        x.className += " w3-show";
+      } else {
+        x.className = x.className.replace(" w3-show", "");
+      }
+    }
+ 
+
+    function check1(){
+    if (flag1==1) {
+      on1();
+      return false;
+    }else if (flag2==0){
+      return true;
+    }   
+    function on1() {
+      document.getElementById("warn1").style.display = "block";
+      
+
+    }
+    
+    
+  }
+
+  </script>
+</body>
+
+</html>

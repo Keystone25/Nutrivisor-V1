@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>NutriVisor</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/w3.css') }}">
+
+    <style>
+        body {
+            background: #f5f7fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .card {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 20px;
+            border-radius: 12px;
+        }
+
+        img {
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .btn {
+            margin: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="w3-card w3-white card w3-center">
+
+    <h2>NutriVisor</h2>
+    <p>Capture food and detect instantly</p>
+
+    <!-- Buttons -->
+<form method="post" action="{{ url_for('tasks') }}">
+    <input class="w3-button w3-red w3-round btn" type="submit" value="Capture" name="click">
+    <input class="w3-button w3-grey w3-round btn" type="submit" value="Clear" name="click">
+</form>
+
+<!-- Back button -->
+<div style="margin-top:10px;">
+    <a href="http://127.0.0.1:5100/U_Home_page" 
+       class="w3-button w3-yellow w3-round">
+       ⬅ Back
+    </a>
+</div>
+    <hr>
+
+    <!-- Live Camera -->
+    <h4>Live Camera</h4>
+    <img src="{{ url_for('video_feed') }}" width="60%">
+
+    <!-- Captured -->
+    <h4>Captured</h4>
+    <img src="{{ url_for('capture_snap') }}" width="60%">
+
+    <!-- Result -->
+    {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        {% for message in messages %}
+            <div class="w3-green w3-padding w3-round" style="margin-top:15px;">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+</div>
+
+</body>
+</html>

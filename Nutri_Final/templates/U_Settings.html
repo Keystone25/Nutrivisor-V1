@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <title>Settings</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="static\css\userstyle.css">
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
+    <!-- Navbar -->
+    <div class="w3-top">
+        <div class="w3-bar w3-yellow w3-card">
+            <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu">
+                <i class="fa fa-bars"></i>
+            </a>
+            <!--<a href="U_Home_page_1.html" class="w3-bar-item w3-button w3-padding-large">Home</a>
+            <a href="U_Progress.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Progress</a>
+            <a href="U_Discover.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Discover</a>
+            <a href="#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Food Adder</a>
+            <a href="U_Settings.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Settings</a>-->
+
+            <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Home</a>
+            <a href="{{ url_for('U_Diet_recommender')}}"
+                class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Diet Recommender</a>
+            <a href="{{ url_for('U_Discover')}}"
+                class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Discover</a>
+            <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Food
+                Scanner</a>
+            <a href="{{ url_for('U_Settings')}}"
+                class="w3-bar-item w3-button w3-padding-large w3-hide-small">Settings</a>
+            <!--<div class="w3-dropdown-hover w3-hide-small">
+            <button class="w3-padding-large w3-button" title="More">MORE <i class="fa fa-caret-down"></i></button>     
+            <div class="w3-dropdown-content w3-bar-block w3-card-4">
+            <a href="#" class="w3-bar-item w3-button">Merchandise</a> 
+            <a href="#" class="w3-bar-item w3-button">Extras</a>
+            <a href="#" class="w3-bar-item w3-button">Media</a>
+            </div>
+            </div>
+            -->
+        </div>
+    </div>
+
+
+    <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+    <div id="navDemo" class="w3-bar-block w3-white w3-border w3-hide w3-hide-large w3-hide-medium w3-top"
+        style="margin-top:46px">
+        <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Home</a>
+        <a href="{{ url_for('U_Diet_recommender')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Diet Recommender</a>
+        <a href="{{ url_for('U_Discover')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Discover</a>
+        <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Food Scanner</a>
+        <a href="{{ url_for('U_Settings')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Settings</a>
+    </div>
+
+
+    <section style="width: 100%; height: 5vh;"></section>
+    <title>User_Discover</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Raleway", sans-serif
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <div class="container">
+            <br>
+            <h1>
+                <center><b>Settings</b></center>
+            </h1>
+            <br>
+            <div class="w3-card">
+                <div class="bg-white shadow rounded-lg d-block d-sm-flex">
+                    <div class="profile-tab-nav border-right">
+
+                        <div class="p-4">
+                            <div class="img-circle text-center mb-3">
+                                <img id="userimg" src="\static\avatar.png" class="shadow">
+                            </div>
+                            <h4 class="text-center" id="username">{{fname}}</h4>
+                            <h6 class="text-center" id="usermail">{{email}}</h6>
+                        </div>
+
+                        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist"
+                            aria-orientation="vertical">
+
+                            <a class="nav-link active" id="account-tab" data-toggle="pill" href="#account" role="tab"
+                                aria-controls="account" aria-selected="true">
+                                <i class="fa fa-home text-center mr-1"></i>
+                                Account
+                            </a>
+
+
+                            <a class="nav-link" id="password-tab" data-toggle="pill" href="#password" role="tab"
+                                aria-controls="password" aria-selected="false">
+                                <i class="fa fa-key text-center mr-1"></i>
+                                Password
+                            </a>
+
+
+                            <a class="nav-link" id="measurement-tab" data-toggle="pill" href="#measurement" role="tab"
+                                aria-controls="measurement" aria-selected="false">
+                                <i class="fa fa-bar-chart text-center mr-1"></i>
+                                Change Measurements
+                            </a>
+
+
+                            <a class="nav-link" id="feedback-tab" data-toggle="pill" href="#feedback" role="tab"
+                                aria-controls="feedback" aria-selected="false">
+                                <i class="fa fa-support text-center mr-1"></i>
+                                feedback
+                            </a>
+
+                            <a class="nav-tabs" style="line-height: 10;">
+                                <br>
+                            </a>
+
+
+                            <a class="nav-link" id="logout-tab" data-toggle="pill" href="#logout" role="tab"
+                                aria-controls="logout" aria-selected="false">
+                                <i class="fa fa-window-close text-center mr-1"></i>
+                                Logout
+                            </a>
+                        </div>
+                    </div>
+                    <div class="tab-content p-4 p-md-5" id="v-pills-tabContent">
+                        <div class="tab-pane fade show active" id="account" role="tabpanel"
+                            aria-labelledby="account-tab">
+
+                            <h3 class="mb-4">Account Settings</h3>
+                          <!--  <div class="row">
+                                <img src="/static/avatar.png" class="imgr">
+                                <div class="pl-sm-4 pl-2" id="img-section">
+                                    <b>Profile Photo</b>
+                                    <p>Accepted file types .jpg &.png. Less than 1MB</p>
+                                    <button class="btn button border"><b>Upload</b></button>
+                                </div>
+                            </div>-->
+                            <br>
+                            <form method="post" action="UpdateUser">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>First Name</label>
+                                            <input type="text" class="form-control" name="fname"
+                                                placeholder="Enter First Name" value="{{fname}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Last Name</label>
+                                            <input type="text" class="form-control" name="lname"
+                                                placeholder="Enter Last Name" value="{{lname}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Email</label>
+                                            <input type="text" name="email" class="form-control" value="{{email}}"
+                                                placeholder="Enter Email id">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Phone number</label>
+                                            <input name="phone" type="tel" class="form-control"
+                                                placeholder="Enter Phone number">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="submit">Update</button>
+                                    <button class="btn btn-light">Cancel</button>
+                                </div>
+                            </form>
+
+                        </div>
+                        <div class="tab-pane fade" id="password" role="tabpanel" aria-labelledby="password-tab">
+                            <h3 class="mb-4">Password Settings</h3>
+                            <form method="post" action="UpdatePassword">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Old password</label>
+                                            <input type="password" class="form-control" name="old-pass">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>New password</label>
+                                            <input type="password" class="form-control" name="new-pass" id="new-pass"
+                                                oninput="checkInput()">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Confirm new password</label>
+                                            <input type="password" class="form-control" name="confirm-pass"
+                                                id="confirm-pass" oninput="checkInput()">
+                                        </div>
+                                        {{password}}
+                                    </div>
+                                    <div id="pass-message"></div>
+                                    <script>
+                                        const checkInput = () => {
+                                            let pass = document.getElementById("new-pass").value;
+                                            let comp = document.getElementById("confirm-pass").value;
+                                            let passcheck = document.getElementById("pass-message");
+                                            let submit = document.getElementById("submit-btn");
+
+                                            if (pass === comp) {
+                                                passcheck.textContent = "Passwords Match!"
+                                                submit.disabled = false;
+                                            } else {
+                                                passcheck.textContent = "Password do not Match!"
+                                                submit.disabled = true;
+                                            }
+                                        }
+                                    </script>
+                                </div>
+                                {%- for category, message in get_flashed_messages(with_categories = true) %}
+                                <div id="error-msg">
+                                    {{ message }}
+                                </div>
+                                {%- endfor %}
+                                <div>
+                                    <button class="btn btn-primary" type="submit" id="submit-btn"
+                                        disabled>Update</button>
+                                    <button class="btn btn-light">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="tab-pane fade" id="measurement" role="tabpanel" aria-labelledby="measurement-tab">
+                            <h3 class="mb-4"><b>Measurement Settings</b></h3>
+                            <form method="post" action="UpdateMeasure">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Height</label>
+                                            <input type="number" class="form-control" name="height" value="{{height}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Weight</label>
+                                            <input type="number" class="form-control" name="weight" value="{{weight}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Gender</label>
+                                            <br>
+                                            <select class="form-control" name="gender">
+                                                <option selected value="{{gender}}"></option>
+                                                <option value="male">Male</option>
+                                                <option value="female">Female</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Age</label>
+                                            <input type="number" class="form-control" name="age" value="{{age}}">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Body type</label>
+                                            <br>
+                                            <select class="form-control" name="bodytype">
+                                                <option selected value="{{bodytype}}"></option>
+                                                <option value="Endomorph">Endomorph</option>
+                                                <option value="Ectomorph">Ectomorph</option>
+                                                <option value="Mesomorph">Mesomorph</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="submit">Update</button>
+                                    <button class="btn btn-light">Cancel</button>
+                                </div>
+                            </form>
+                        </div>
+
+
+
+
+                        <div class="tab-pane fade" id="feedback" role="tabpanel" aria-labelledby="feedback-tab">
+                            <h3 class="mb-4">Feedback</h3>
+                            <form action="{{ request.path }}" method="post">
+                                <div class="form-group">
+                                    <label for="name">Name : </label><br>
+                                    <input type="text" name="name" placeholder="Enter name" value="{{fname}}" /><br><br>
+                                    <label for="message">Message : </label><br>
+                                    <textarea id="message" name="message" placeholder="Write something.."
+                                        style="height:200px"></textarea>
+                                </div>
+                                <div>
+                                    <button class="btn btn-primary" type="submit">Submit</button>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div class="tab-pane fade" id="logout" role="tabpanel" aria-labelledby="logout-tab">
+                            <h3 class="mb-4">Logout</h3>
+                            <form action="{{ request.path }}" method="post">
+                                <div class="form-group">
+                                    <label for="name"> Are you sure you want to log out?</label><br>
+                                </div>
+                                <div>
+                                    <a href="{{ url_for('logout') }}" class="btn btn-primary">Logout</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+        <script>
+            // Script to open and close sidebar
+            function w3_open() {
+                document.getElementById("mySidebar").style.display = "block";
+                document.getElementById("myOverlay").style.display = "block";
+            }
+
+            function w3_close() {
+                document.getElementById("mySidebar").style.display = "none";
+                document.getElementById("myOverlay").style.display = "none";
+            }
+
+            function myFunction() {
+                var x = document.getElementById("navDemo");
+                if (x.className.indexOf("w3-show") == -1) {
+                    x.className += " w3-show";
+                } else {
+                    x.className = x.className.replace(" w3-show", "");
+                }
+            }
+        </script>
+
+    </main>
+</body>
+
+</html>

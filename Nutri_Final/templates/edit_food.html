@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Navbar -->
+  <div class="w3-top">
+    <div class="w3-bar w3-yellow w3-card">
+      <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)"
+        onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+      <a href="{{ url_for('User_database') }}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Manage Users</a>
+      <a href="{{ url_for('Feedback_Admin_Side') }}"
+        class="w3-bar-item w3-button w3-padding-large w3-hide-small">Feedback</a>
+      <a href="{{ url_for('Admin_Panel') }}" class="w3-bar-item w3-button w3-padding-large">Mange Food</a>
+      <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+
+    </div>
+  </div>
+
+  <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+  <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
+    <a href="{{ url_for('User_database') }}" class="w3-bar-item w3-button w3-padding-large">Mange Users</a>
+    <a href="{{ url_for('Feedback_Admin_Side') }}" class="w3-bar-item w3-button w3-padding-large">Feedback</a>
+    <a href="{{ url_for('Admin_Panel') }}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Manage Food</a>
+    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+
+  </div>
+
+
+  <!--Image end-->
+  <section style="width: 100%; height: 5vh;"></section>
+  <title>Home Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="style1.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Raleway", sans-serif
+    }
+
+    #chart-wrapper {
+      display: inline-block;
+      position: relative;
+      width: 100%;
+    }
+
+    input[type=text],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      resize: vertical;
+    }
+
+    input[type=submit] {
+      background-color: #04AA6D;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+
+    .container {
+      border-radius: 5px;
+      background-color: #ffffff;
+      padding: 20px;
+    }
+  </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<body class="w3-content" style="max-width:1600px;">
+
+  <!-- Sidebar/menu -->
+
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+    title="close side menu" id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:20px; margin-top: 30px;">
+    <h1><b>
+        <center>Edit Food</center>
+      </b></h1>
+  </div>
+
+
+  <div class="w3-container w3-content" style="max-width:800px;margin-top:30px; margin: auto; align-content: center;">
+    <!-- The Grid -->
+    <div class="w3-row ">
+      <!-- Left Column -->
+      <!-- <div class="w3-col m7">-->
+      <!-- Profile -->
+      <div class="w3-card w3-round w3-white w3-margin ">
+        <div class="w3-container">
+
+          <form action="{{ request.path }}" method="post" enctype="multipart/form-data">
+            <br>
+            <div class="we">
+              <label for="item">Item</label>
+              <input type="text" name="item" placeholder="Item" id="item" value="{{ item.item }}" />
+            </div>
+
+            <div class="we">
+              <label for="cal">Calories</label>
+              <input type="text" id="cal" name="cal" value="{{ item.cal }}" placeholder="Calories" />
+            </div>
+
+            <div class="we">
+              <label for="stdwt">Standard weight</label>
+              <input type="text" id="stdwt" name="stdwt" value="{{ item.stdwt }}" placeholder="Standard weight" />
+            </div>
+
+            <div class="we">
+              <label for="cal100">Calories per 100g</label>
+              <input type="text" id="cal100" name="cal100" value="{{ item.cal100 }}" placeholder="Calories per 100g" />
+            </div>
+
+            <div class="we">
+              <label for="meal">Meal type</label>
+              <input type="text" id="meal" name="meal" value="{{ item.meal }}" placeholder="Meal type" />
+            </div>
+
+            <div class="we">
+              <label for="allergen1">Allergen1</label>
+              <input type="text" id="allergen1" name="allergen1" value="{{ item.allergen1 }}"  placeholder="Allergen1" />
+            </div>
+
+            <div class="we">
+              <label for="allergen2">Allergen2</label>
+              <input type="text" id="allergen2" name="allergen2" value="{{ item.allergen2 }}"  placeholder="Allergen2" />
+            </div>
+
+            <div class="we">
+              <label for="risk1">Risk1</label>
+              <input type="text" id="risk1" name="risk1" value="{{ item.risk1 }}"  placeholder="Risk1" />
+            </div>
+            
+            
+            <div class="we">
+                <label for="risk2">Risk2</label>
+                <input type="text" id="risk2" name="risk2"  value="{{ item.risk2 }}" placeholder="Risk2"/>
+              </div>
+
+            <div class="we">
+              <label for="img">imgpath</label>
+              <input type="text" id="img" name="img" value="{{ item.imgpath }}" placeholder="Path" />
+            </div>
+
+            <input type="submit" value="Submit"  />
+          </form>
+        </div>
+        <br>
+      </div>
+      <!--</div>-->
+      <script>
+        // Script to open and close sidebar
+        function w3_open() {
+          document.getElementById("mySidebar").style.display = "block";
+          document.getElementById("myOverlay").style.display = "block";
+        }
+
+        function w3_close() {
+          document.getElementById("mySidebar").style.display = "none";
+          document.getElementById("myOverlay").style.display = "none";
+        }
+
+        function myFunction() {
+          var x = document.getElementById("navDemo");
+          if (x.className.indexOf("w3-show") == -1) {
+            x.className += " w3-show";
+          } else {
+            x.className = x.className.replace(" w3-show", "");
+          }
+        }
+      </script>
+    </div>
+  </div>
+
+</body>
+
+</html>

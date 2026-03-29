@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="../static/css/w3.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Montserrat", sans-serif
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Icon Bar (Sidebar - hidden on small screens) -->
+
+  <head>
+    <!-- Navbar -->
+    <div class="w3-top">
+      <div class="w3-bar w3-yellow w3-card">
+        <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+          href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+        <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Home</a>
+        <a href="{{ url_for('U_Diet_recommender')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Diet Recommender</a>
+        <a href="{{ url_for('U_Discover')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Discover</a>
+        <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Food
+          Scanner</a>
+        <a href="{{ url_for('U_Settings')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Settings</a>
+        <!--<div class="w3-dropdown-hover w3-hide-small">
+                <button class="w3-padding-large w3-button" title="More">MORE <i class="fa fa-caret-down"></i></button>     
+                <div class="w3-dropdown-content w3-bar-block w3-card-4">
+                  <a href="#" class="w3-bar-item w3-button">Merchandise</a> 
+                  <a href="#" class="w3-bar-item w3-button">Extras</a>
+                  <a href="#" class="w3-bar-item w3-button">Media</a>
+                </div>
+              </div>
+            -->
+      </div>
+    </div>
+
+    <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+    <div id="navDemo" class="w3-bar-block w3-white w3-border w3-hide w3-hide-large w3-hide-medium w3-top"
+      style="margin-top:46px">
+      <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large"
+        onclick="myFunction()">Home</a>
+      <a href="{{ url_for('U_Diet_recommender')}}" class="w3-bar-item w3-button w3-padding-large"
+        onclick="myFunction()">Diet Recommender</a>
+      <a href="{{ url_for('U_Discover')}}" class="w3-bar-item w3-button w3-padding-large"
+        onclick="myFunction()">Discover</a>
+      <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large" onclick="myFunction()">Food Scanner</a>
+      <a href="{{ url_for('U_Settings')}}" class="w3-bar-item w3-button w3-padding-large"
+        onclick="myFunction()">Settings</a>
+    </div>
+
+
+    <!-- Page Content -->
+    <div class="w3-padding-large" id="main">
+      <!-- Header/Home -->
+      <header class="w3-container w3-padding-32 w3-center" id="home">
+        <h1 class="w3-jumbo"><span class="w3-hide-small">NUTRIVISOR</h1>
+        <p>Food App</p>
+        <img src="/static/front.png" class="w3-image" width="992" height="1108">
+      </header>
+
+      <!-- About Section -->
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+      </script>
+      <div class="w3-card" style="padding: 20px;">
+        <h3>You have confirmed the following item with these:</h3>
+        <hr />
+
+        {% for user in users %}
+        {% for menus in menu %}
+
+        <form action='/confirm' method="post">
+           <div><img src="{{menus.imgpath}}" style="width:200px; ">
+          {{ menus.stdwt }}
+          {{ menus.cal100 }}
+           <input type="text" id="type" name="type" value="{{menus.meal}}" readonly><br><br>
+
+
+
+          
+
+            <label for="item">Item:</label>
+            <input type="text" id="item" name="item" value="{{menus.item}}" readonly><br><br>
+            <label for="cal">Calories:</label>
+            <input type="text" id="cal" name="cal" value="{{menus.cal}}" readonly><br><br>
+          
+          <input type="submit" value="Submit">
+        </div>
+        </form>
+        {% endfor %}
+        {% endfor %}
+      </div>
+</body>
+
+</html>

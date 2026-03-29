@@ -1,0 +1,56 @@
+
+
+{% block content %}
+
+    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/styles.css') }}">
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+<h2>Welcome Back!</h2>
+<p id="lp">Sign in to your account...</p>
+<div class="form_wrap">
+
+    
+        {% with messages = get_flashed_messages() %}
+    {% if messages %}
+        <div id = "error-msg">
+            {{ messages[0] }}
+        </div>
+    {% endif %}
+    {% endwith %}
+
+    <form action="{{ request.path }}" method="post">
+        <div class="form_container">
+            <div class="input_wrap">    
+                <label for="uname">User name</label>
+                <input type="text" name="email" class="input" id="uname " required>
+            </div>
+            <div class="input_wrap">
+                <label for="uname">Password</label>
+                <input type="password" name="pass" class="input" id="pass" required>
+            </div>
+                <div class="btns_wrap">
+                    <div class="common_btns form_1_btns"> 
+                        <button type="submit" value="submit" name="submit" class="btn_next">Sign in<span class="icon"><ion-icon name="arrow-forward-sharp"></ion-icon></span></button>
+                    </div>
+                </div>
+        </div>
+    </form>
+    <p id="lp">Don't have an account? <a href="{{ url_for('signup') }}">Sign Up</a></p>
+</div>
+
+
+
+</div>
+</body>
+</html>
+{% endblock %}

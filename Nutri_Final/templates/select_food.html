@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="../static/css/w3.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Montserrat">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+body, h1,h2,h3,h4,h5,h6 {font-family: "Montserrat", sans-serif}
+.w3-row-padding img {margin-bottom: 12px}
+.w3-sidebar {width: 120px;background: #222;}
+#main {margin-left: 120px}
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f1f1f1;
+  padding: 20px;
+  font-family: Arial;
+}
+
+/* Center website */
+.main {
+  max-width: 1000px;
+  margin: auto;
+}
+
+h1 {
+  font-size: 50px;
+  word-break: break-all;
+}
+
+.row {
+  margin: 10px -16px;
+}
+
+/* Add padding BETWEEN each column */
+.row,
+.row > .column {
+  padding: 8px;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 25%;
+  display: none; /* Hide all elements by default */
+}
+
+/* Clear floats after rows */ 
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Content */
+.content {
+  background-color: white;
+  padding: 10px;
+}
+
+/* The "show" class is added to the filtered elements */
+.show {
+  display: block;
+}
+
+/* Style the buttons */
+.btn {
+  border: none;
+  outline: none;
+  padding: 12px 16px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: #ddd;
+}
+
+.btn.active {
+  background-color: #666;
+  color: white;
+}
+
+#overlay1, #overlay2 {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0,0,0,0.5);
+  z-index: 2;
+  cursor: pointer;
+}
+
+#text{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 50px;
+  color: white;
+  transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+}
+</style>
+</head>
+<body class="w3-black">
+
+<!-- Icon Bar (Sidebar - hidden on small screens) -->
+<nav class="w3-sidebar w3-bar-block w3-small w3-hide-small w3-center">
+  <!-- Avatar image in top left corner -->
+  <img src="/static/front1.png" style="width:100%">
+  <a href="{{ url_for('main_all') }}" class="w3-bar-item w3-button w3-padding-large w3-black">
+    <i class="fa fa-home w3-xxlarge"></i>
+    <p>HOME</p>
+  </a>
+  <a href="{{ url_for('new1') }}"  class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-user w3-xxlarge"></i>
+    <p>ADD USER</p>
+  </a>
+  <a href="{{ url_for('allusers') }}"  class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-users w3-xxlarge"></i>
+    <p>VIEW ALL USERS</p>
+  </a>
+  <a href="{{ url_for('new2') }}"  class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-plus-circle w3-xxlarge"></i>
+    <p>ADD MENU</p>
+  </a>
+  <a href="{{ url_for('allmenu') }}"  class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-database w3-xxlarge"></i>
+    <p>VIEW FULL MENU</p>
+  </a>
+  <a href=""  class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-eye w3-xxlarge"></i>
+    <p>RECOGNIZE FOOD</p>
+  </a>
+  <a href="{{ url_for('select_food') }}"  class="w3-bar-item w3-button w3-padding-large w3-hover-black">
+    <i class="fa fa-cutlery w3-xxlarge"></i>
+    <p>CHOOSE FOOD</p>
+  </a>
+</nav>
+
+
+<!-- Page Content -->
+<div class="w3-padding-large" id="main">
+  <!-- Header/Home -->
+  <header class="w3-container w3-padding-32 w3-center w3-black" id="home">
+    <h1 class="w3-jumbo"><span class="w3-hide-small">NUTRIVISOR</h1>
+    <p>Food App</p>
+    <img src="/static/front.png"  class="w3-image" width="992" height="1108">
+  </header>
+
+  <!-- About Section -->
+     
+      <div class="w3-content w3-justify w3-text-grey w3-padding-64" id="about">
+
+<div id="myBtnContainer">
+  <button class="btn active" onclick="filterSelection('all')"> Show all</button>
+  <button class="btn" onclick="filterSelection('breakfast')"> Breakfast</button>
+  <button class="btn" onclick="filterSelection('lunch')"> Lunch</button>
+  <button class="btn" onclick="filterSelection('dinner')"> Dinner</button>
+</div>
+
+<!-- Portfolio Gallery Grid -->
+<div class="row">
+  <div class="column breakfast">
+    <div class="content">
+      <img src="\static\club_sandwich.png" style="width:200px" "height:200px">
+      <h4>Club sandwich</h4>
+	  			
+	  {% for menus in menu %}
+		{% if menus.item=='Club Sandwich' %}
+			<p>Calories/100g: {{ menus.cal100 }}<br>
+			Typical Serving Size: {{ menus.stdwt }}g<br>
+			Total Calories: {{ menus.cal }}<br> </p> 			
+		{% endif %}
+	{% endfor %}
+	
+	<div id="overlay1" onclick="off()">
+	<div id="text"><p>You have chosen: Club Sandwich<br><br>
+	
+	{% for user in users %}
+	{% for menus in menu %}
+		{% if user.name=='john' %}
+		{% if menus.item=='Club Sandwich' %}
+		% of daily calorie needs:<p id="demo1">%</p>
+		<script>
+		function myFunction(p1, p2) {
+		t=(parseInt(p1)/parseInt(p2))*100
+		return t;
+		}
+		document.getElementById("demo1").innerHTML = myFunction({{ menus.cal }}, {{ user.cal }});
+		</script>
+		Remaining calories needed to be consumed:<p id="demo2"></p>
+		<script>
+		function myFunction(p1, p2) {
+		t=parseInt(p1)-parseInt(p2)
+		return t;
+		}
+		document.getElementById("demo2").innerHTML = myFunction({{ user.cal }}, {{ menus.cal }});
+		</script>
+		
+		</div>			
+		{% endif %}
+		{% endif %}
+	{% endfor %}
+	{% endfor %}
+	</div>
+	
+	<div style="padding:5px">
+	<button onclick="on()">SELECT</button>
+	<a href="{{ url_for('confirm') }}" class="w3-button w3-round w3-black">CONFIRM</a>
+	</div>
+
+	<script>
+	function on() {
+	document.getElementById("overlay1").style.display = "block";
+	}
+	function off() {
+	document.getElementById("overlay1").style.display = "none";
+	}
+
+	</script>
+    </div>
+  </div>
+  
+  
+  <div class="column breakfast">
+    <div class="content">
+      <img src="/static/devilled_eggs.png"  style="width:200px" "height:100px">
+      <h4>Devilled Eggs</h4>
+	  
+      {% for menus in menu %}
+		{% if menus.item=='Deviled eggs' %}
+			<p>Calories/100g: {{ menus.cal100 }}<br>
+			Typical Serving Size: {{ menus.stdwt }}g<br>
+			Total Calories: {{ menus.cal }}<br> </p> 			
+		{% endif %}
+	{% endfor %}
+	
+	<div id="overlay2" onclick="off1()">
+	<div id="text"><p>You have chosen: Devilled Eggs<br><br>
+	
+	{% for user in users %}
+	{% for menus in menu %}
+		{% if user.name=='john' %}
+		{% if menus.item=='Deviled eggs' %}
+		% of daily calorie needs:<p id="demo3">%</p>
+		<script>
+		function myFunction(p1, p2) {
+		t=(parseInt(p1)/parseInt(p2))*100
+		return t;
+		}
+		document.getElementById("demo3").innerHTML = myFunction({{ menus.cal }}, {{ user.cal }});
+		</script>
+		Remaining calories needed to be consumed:<p id="demo4"></p>
+		<script>
+		function myFunction(p1, p2) {
+		t=parseInt(p1)-parseInt(p2)
+		return t;
+		}
+		document.getElementById("demo4").innerHTML = myFunction({{ user.cal }}, {{ menus.cal }});
+		</script>
+		
+		</div>			
+		{% endif %}
+		{% endif %}
+	{% endfor %}
+	{% endfor %}
+	</div>
+	
+	<div style="padding:5px">
+	<button onclick="on1()">SELECT</button>
+	<a href="{{ url_for('confirm') }}" class="w3-button w3-round w3-black">CONFIRM</a>
+	</div>
+
+	<script>
+	function on1() {
+	document.getElementById("overlay2").style.display = "block";
+	}
+	function off1() {
+	document.getElementById("overlay2").style.display = "none";
+	}
+
+
+	</script>
+    </div>
+  </div>
+  
+  
+  <div class="column breakfast">
+    <div class="content">
+      <img src="/static/french_toast.png"  style="width:200px" "height:200px">
+      <h4>French toast</h4>
+      {% for menus in menu %}
+		{% if menus.item=='French toast' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column breakfast">
+    <div class="content">
+      <img src="/static/omelette.png"  style="width:200px" "height:200px">
+      <h4>Omlette</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Omlette' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column breakfast">
+    <div class="content">
+      <img src="/static/pancakes.png"  style="width:200px" "height:200px">
+      <h4>Pancakes</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Pancakes' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column breakfast">
+    <div class="content">
+      <img src="/static/waffles.png"  style="width:200px" "height:200px">
+      <h4>Waffles</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Waffles' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column breakfast">
+    <div class="content">
+      <img src="/static/grilled_cheese_sandwich.png"  style="width:200px" "height:200px">
+      <h4>Grilled Cheese Sandwich</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Grilled cheese sandwich' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+ 
+ 
+  <div class="column lunch">
+    <div class="content">
+      <img src="/static/caesar_salad.png"  style="width:100%">
+      <h4>Caesar Salad</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Caesar Salad' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column lunch">
+    <div class="content">
+      <img src="/static/chicken_curry.png"  style="width:100%">
+      <h4>Chicken Curry</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Chicken Curry' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column lunch">
+    <div class="content">
+      <img src="/static/falafel.png"  style="width:100%">
+      <h4>Falafel</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Falafel' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column lunch">
+    <div class="content">
+      <img src="/static/fish_and_chips.png"  style="width:100%">
+      <h4>Fish and Chips</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Fish and Chips' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  
+  <div class="column lunch">
+    <div class="content">
+      <img src="/static/fried_rice.png"  style="width:100%">
+      <h4>Fried Rice</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Fried rice' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+	
+	
+  </div><div class="column lunch">
+    <div class="content">
+      <img src="/static/pizza.png"  style="width:100%">
+      <h4>Pizza</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Pizza' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+	
+	
+  </div><div class="column lunch">
+    <div class="content">
+      <img src="/static/steak.png"  style="width:100%">
+      <h4>Steak</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Steak' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/chicken_wings.png"  style="width:100%">
+      <h4>Chicken Wings</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Chicken wings' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/dumplings.png"  style="width:100%">
+      <h4>Dumplings</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Dumplings' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/french_onion_soup.png"  style="width:100%">
+      <h4>French Onion Soup</h4>
+      {% for menus in menu %}
+		{% if menus.item=='French Onion Soup' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/greek_salad.png"  style="width:100%">
+      <h4>Greek Salad</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Greek salad' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/mac_and_cheese.png"  style="width:100%">
+      <h4>Mac and Cheese</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Mac and cheese' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/risotto.png"  style="width:100%">
+      <h4>Risotto</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Risotto' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+  <div class="column dinner">
+    <div class="content">
+      <img src="/static/sushi.png"  style="width:100%">
+      <h4>Sushi</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Sushi' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div><div class="column dinner">
+    <div class="content">
+      <img src="/static/tacos.png"  style="width:100%">
+      <h4>Tacos</h4>
+      {% for menus in menu %}
+		{% if menus.item=='Tacos' %}
+			<p>Calories/100g:</p>
+			<p>{{ menus.cal100 }}</p> 			
+		{% endif %}
+	{% endfor %}
+    </div>
+  </div>
+<!-- END GRID -->
+</div>
+
+<!-- END MAIN -->
+</div>
+
+<script>
+filterSelection("all")
+function filterSelection(c) {
+  var x, i;
+  x = document.getElementsByClassName("column");
+  if (c == "all") c = "";
+  for (i = 0; i < x.length; i++) {
+    w3RemoveClass(x[i], "show");
+    if (x[i].className.indexOf(c) > -1) w3AddClass(x[i], "show");
+  }
+}
+
+function w3AddClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    if (arr1.indexOf(arr2[i]) == -1) {element.className += " " + arr2[i];}
+  }
+}
+
+function w3RemoveClass(element, name) {
+  var i, arr1, arr2;
+  arr1 = element.className.split(" ");
+  arr2 = name.split(" ");
+  for (i = 0; i < arr2.length; i++) {
+    while (arr1.indexOf(arr2[i]) > -1) {
+      arr1.splice(arr1.indexOf(arr2[i]), 1);     
+    }
+  }
+  element.className = arr1.join(" ");
+}
+
+
+// Add active class to the current button (highlight it)
+var btnContainer = document.getElementById("myBtnContainer");
+var btns = btnContainer.getElementsByClassName("btn");
+for (var i = 0; i < btns.length; i++) {
+  btns[i].addEventListener("click", function(){
+    var current = document.getElementsByClassName("active");
+    current[0].className = current[0].className.replace(" active", "");
+    this.className += " active";
+  });
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+<body>
+<canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+<div class="main">
+
+<h1>NUTRIVISOR</h1>
+
+
+
+{% for user in users %}
+	{% for menus in menu %}
+		{% if user.name=='john' %}
+		{% if menus.item=='Club Sandwich' %}
+		<script>
+		t=(parseInt({{ menus.cal }})/parseInt({{ user.cal }}))*100
+		</script>		
+		{% endif %}
+		{% endif %}
+	{% endfor %}
+	{% endfor %}
+
+
+
+
+
+<script>
+var xValues = ["Consumed", "Remaining"];
+var yValues = [t, 100-t];
+var barColors = [
+  "#b91d47",
+  "#00aba9",
+];
+
+new Chart("myChart", {
+  type: "doughnut",
+  data: {
+    labels: xValues,
+    datasets: [{
+      backgroundColor: barColors,
+      data: yValues
+    }]
+  },
+  options: {
+    title: {
+      display: true,
+      text: "CALORIE CONSUMPTION"
+    }
+  }
+});
+</script>
+</div>
+</body>
+</html>

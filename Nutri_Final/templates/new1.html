@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <!-- Navbar -->
+  <div class="w3-top">
+    <div class="w3-bar w3-yellow w3-card">
+      <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right" href="javascript:void(0)"
+        onclick="myFunction()" title="Toggle Navigation Menu"><i class="fa fa-bars"></i></a>
+      <a href="{{ url_for('User_database') }}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Manage Users</a>
+      <a href="{{ url_for('Feedback_Admin_Side') }}"
+        class="w3-bar-item w3-button w3-padding-large w3-hide-small">Feedback</a>
+      <a href="{{ url_for('Admin_Panel') }}" class="w3-bar-item w3-button w3-padding-large">Manage Food</a>
+      <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+    </div>
+  </div>
+
+  <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+  <div id="navDemo" class="w3-bar-block w3-black w3-hide w3-hide-large w3-hide-medium w3-top" style="margin-top:46px">
+    <a href="{{ url_for('User_database') }}" class="w3-bar-item w3-button w3-padding-large">Manage Users</a>
+    <a href="{{ url_for('Feedback_Admin_Side') }}" class="w3-bar-item w3-button w3-padding-large">Feedback</a>
+    <a href="{{ url_for('Admin_Panel') }}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Manage Food</a>
+    <a href="{{ url_for('logout') }}" class="w3-bar-item w3-button w3-padding-large">Logout</a>
+  </div>
+
+
+  <!--Image end-->
+  <section style="width: 100%; height: 5vh;"></section>
+  <title>Home Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+  <link rel="stylesheet" href="style1.css">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <style>
+    body,
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+      font-family: "Raleway", sans-serif
+    }
+
+    #chart-wrapper {
+      display: inline-block;
+      position: relative;
+      width: 100%;
+    }
+
+    input[type=text],
+    input[type=date],
+    input[type=password],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+      margin-top: 6px;
+      margin-bottom: 16px;
+      resize: vertical;
+    }
+
+    input[type=submit] {
+      background-color: #04AA6D;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    input[type=submit]:hover {
+      background-color: #45a049;
+    }
+
+    .container {
+      border-radius: 5px;
+      background-color: #ffffff;
+      padding: 20px;
+    }
+  </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<body class="w3-content" style="max-width:1600px;">
+
+  <!-- Sidebar/menu -->
+
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+    title="close side menu" id="myOverlay"></div>
+
+  <!-- !PAGE CONTENT! -->
+  <div class="w3-main" style="margin-left:20px; margin-top: 30px;">
+    <h1><b>
+        <center>Add User</center>
+      </b></h1>
+  </div>
+
+
+  <div class="w3-container w3-content" style="max-width:800px;margin-top:30px; margin: auto; align-content: center;">
+    <!-- The Grid -->
+    <div class="w3-row ">
+      <!-- Left Column -->
+      <!-- <div class="w3-col m7">-->
+      <!-- Profile -->
+      <div class="w3-card w3-round w3-white w3-margin ">
+        <div class="w3-container">
+
+          <form action="{{ request.path }}" method="post" enctype="multipart/form-data">
+            <div class="we">
+              <label for="fname">Firstname</label>
+              <input type="text" name="fname">
+            </div>
+            <div class="we">
+              <label for="lname">Lastname</label>
+              <input type="text" name="lname">
+            </div>
+            <div class="we">
+              <label for="email">Email</label>
+              <input type="text" name="email">
+            </div>
+            <div class="we">
+              <label for="phn">Phone No</label>
+              <input type="text" name="phn">
+            </div>
+            <div class="we">
+              <label for="dob">Date Of Birth</label>
+              <input type="date" name="dob">
+            </div>
+            <div class="we">
+              <label for="pass">Password</label>
+              <input type="password" name="pass">
+            </div>
+            <div class="we">
+              <label for="pass1">Confirm Password</label>
+              <input type="password" name="pass1">
+            </div>
+            <div class="we">
+              <label for="weight">Weight</label>
+              <input type="text" name="weight">
+            </div>
+            <div class="we">
+              <label for="height">Height</label>
+              <input type="text" name="height">
+            </div>
+            <div class="we">
+              <label for="age">Age</label>
+              <input type="text" name="age">
+            </div>
+            <div class="we">
+              <label>Gender</label>
+              <select name="gender" id="gender">
+                <option value="" selected="selected">Select</option>
+                <option value="Sedentary">Male</option>
+                <option value="Moderate">Female</option>
+              </select>
+            </div>
+            <div class="we">
+              <label>Body Type</label>
+              <select name="bdy" id="bdy">
+                <option value="" selected="selected">Select</option>
+                <option value="Ectomorph">Ectomorph</option>
+                <option value="Mesomorph">Mesomorph</option>
+                <option value="Endomorph">Endomorph</option>
+              </select>
+            </div>
+            <div class="we">
+              <label for="act">Your Activity Level</label>
+              <select name="act" id="act">
+                <option value="" selected="selected">Select</option>
+                <option value="Sedentary">Sedentary</option>
+                <option value="Moderate">Moderate</option>
+                <option value="Very">Very</option>
+              </select>
+              <br>
+            </div>
+            <div class="we">
+              <label for="goal">Select your Goal</label>
+              <select name="goal" id="goal">
+                <option value="" selected="selected">Select</option>
+                <option value="Weight_Loss">Weight Loss</option>
+                <option value="Weight_Gain">Weight Gain</option>
+                <option value="Maintenance">Maintain</option>
+              </select>
+            </div>
+
+            <div class="we">
+
+              <label>What are your Health issues?</label>
+              <br>
+              <input type="checkbox" value="cholestrol" name="health_issues1"> Cholestrol<br>
+              <input type="checkbox" value="diabetic" name="health_issues2"> Diabetic<br>
+              <input type="checkbox" value="" name="hi1"> Nil<br>
+    
+            </div>
+
+            <div class="we">
+              <label>Are you allergic to any food items?</label>
+              <br>
+              <p>I</p>
+              <input type="checkbox" value="milk" name="Allergy1"> Milk<br>
+              <input type="checkbox" value="gluten" name="Allergy2">Gluten<br>
+              <input type="checkbox" value="" name="Allrgy1"> Nil<br>
+
+            </div>
+
+        
+      <br>
+ 
+
+        
+        <section style="width: 100%; height: 7vh;"></section>
+        <input type="submit" value="Submit" />
+
+        </form>
+      </div>
+      <br>
+    </div>
+  </div>
+    <!--</div>-->
+    <script>
+      // Script to open and close sidebar
+      function w3_open() {
+        document.getElementById("mySidebar").style.display = "block";
+        document.getElementById("myOverlay").style.display = "block";
+      }
+
+      function w3_close() {
+        document.getElementById("mySidebar").style.display = "none";
+        document.getElementById("myOverlay").style.display = "none";
+      }
+
+      function myFunction() {
+        var x = document.getElementById("navDemo");
+        if (x.className.indexOf("w3-show") == -1) {
+          x.className += " w3-show";
+        } else {
+          x.className = x.className.replace(" w3-show", "");
+        }
+      }
+    </script>
+  </div>
+  </div>
+
+</body>
+
+</html>

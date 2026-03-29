@@ -1,0 +1,244 @@
+
+
+{% block content %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Your Account</title>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/styles.css') }}">
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    
+</head>
+<body>
+    <div class="wrapper">
+        <h2>Register</h2>
+        <div class="header">
+            <ul>
+                <li class="active form_1_progessbar">
+                    <div>
+                        <p>1</p>
+                    </div>
+                </li>
+                <li class="form_2_progessbar">
+                    <div>
+                        <p>2</p>
+                    </div>
+                </li>
+                <li class="form_3_progessbar">
+                    <div>
+                        <p>3</p>
+                    </div>
+                </li>
+                <li class="form_4_progessbar">
+                    <div>
+                        <p>4</p>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        
+        <form action="{{ request.path }}" method="post">
+        <div class="form_wrap">
+            
+            {%- for category, message in get_flashed_messages(with_categories = true) %}
+         <div id = "error-msg">
+            {{ message }}
+         </div>
+            {%- endfor %}
+            
+            <div class="form_1 data_info">
+                
+                
+                    <div class="form_container">
+                        <div class="input_wrap">
+                            <label for="fname">Firstname*</label>
+                            <input type="text" name="fname" class="input" id="fname" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="lname">Lastname*</label>
+                            <input type="text" name="lname" class="input" id="lname" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="email">Email*</label>
+                            <input type="text" name="email" class="input" id="email" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="phn">Phone No*</label>
+                            <input type="text" name="phn" class="input" id="phn" maxlength="10" placeholder="Exclude country code" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="dob">Date Of Birth*</label>
+                            <input type="date" name="dob" class="input" id="dob" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="pass">Password*</label>
+                            <input type="password" name="pass" class="input" id="pass" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="pass1">Confirm Password*</label>
+                            <input type="password" name="pass1" class="input" id="pass1" >
+                        </div>
+                        
+                    </div>
+                
+            </div>
+
+            <div class="form_2 data_info" style="display: none;">
+                
+                
+                    <div class="form_container">
+                        <div class="input_wrap">
+                            <label for="weight">Weight*</label>
+                            <input type="text" name="weight" class="input" id="weight" placeholder="in Kg" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="height">Height*</label>
+                            <input type="text" name="height" class="input" id="height" placeholder="in cm" >
+                        </div>
+                        <div class="input_wrap">
+                            <label for="age">Age*</label>
+                            <input type="text" name="age" class="input" id="age" >
+                        </div>
+                        <div class="input_wrap">
+                            <P>Gender*</P><br>
+                            <input type="radio" name="gender"  id="gender" value="Male"  checked>Male
+                            
+                        </div>
+                        <div class="input_wrap">
+                            <input type="radio" name="gender" id="gender" value="Female">Female
+                            
+                        </div>
+                        
+                        
+
+
+                        
+                        <div class="input_wrap">
+                         <p>Body Type*</p><br>
+                        <div class="input_wrap_new">  
+                             
+                         <label>
+                            <input type="radio" name="bdy" value="Ectomorph" checked  >
+                            <img src="static\Untitled-2.png" style=" width:50px" alt="Ectomorph">
+                        </label>
+
+                        <label>
+                            <input type="radio" name="bdy" value="Mesomorph">
+                            <img src="static\Untitled-3.png" style=" width:50px;" alt="Mesomorph">
+                        </label>
+
+                        <label>
+                            <input type="radio" name="bdy" value="Endomorph">
+                            <img src="static\Untitled-4.png" style=" width:50px" alt="Endomorph">
+                        </label>
+                        </div>
+                        </div>
+                    </div>
+                
+            </div>
+
+            <div class="form_3 data_info" style="display: none;">
+                
+                
+                    <div class="form_container">
+                        <div class="input_wrap">
+                            <label for="act">Your Activity Level*</label>
+                            <select name="act" id="act" class="input" >
+                            <option value="" selected="selected">Select</option>    
+                            <option value="Sedentary">Sedentary</option>
+                            <option value="Moderate">Moderate</option>
+                            <option value="Very">Very</option>
+                            </select>
+                            <br>
+                        </div>
+                        <div class="input_wrap">
+                            <label for="goal">Select your Goal*</label>
+                            <select name="goal" id="goal" class="input" >
+                            <option value="" selected="selected">Select</option>    
+                            <option value="Weight_Loss">Weight Loss</option>
+                            <option value="Weight_Gain">Weight Gain</option>
+                            <option value="Maintenance">Maintain</option>
+                            </select>
+                        </div>
+                        
+                    </div>
+                
+            </div>
+
+            <div class="form_4 data_info" style="display: none;">
+                
+                
+                    <div class="form_container">
+                        <div class="input_wrap">
+                            <label for="hi">Choose any current Health Issues</label><br>
+                            <div class="input_wrap">
+                                <input type="checkbox" name="health_issues1"  id="hi" value="cholestrol"  >Cholestrol
+                                <br>
+                                <input type="checkbox" name="health_issues2" id="hi" value="diabetic">Diabetic
+                                <br>
+                                <input type="checkbox" name="health_issues1"  id="hi" value=""  >Nil
+                                
+                            </div>
+                           
+
+                        </div>
+                        <div class="input_wrap">
+                            <label for="alrgy">Are you allergic to any food items?</label><br>
+
+                            <div class="input_wrap">
+                                <input type="checkbox" name="allergy1"  id="alrgy" value="milk"  >Milk
+                                <br>
+                                <input type="checkbox" name="allergy2" id="alrgy" value="gluten">Gluten
+                                <br>
+                                <input type="checkbox" name="allergy1" id="alrgy" value="">Nil
+                            </div>
+
+
+
+                        </div>
+                        
+                    </div>
+                
+            </div>
+            
+        </div>
+        
+        
+        <div class="btns_wrap">
+            <div class="common_btns form_1_btns">
+                <button type="button" class="btn_next">Next <span class="icon"><ion-icon name="arrow-forward-sharp"></ion-icon></span></button>
+            </div>
+            <div class="common_btns form_2_btns" style="display: none;">
+                <button type="button" class="btn_back"><span class="icon"><ion-icon name="arrow-back-sharp"></ion-icon></span>Back</button>
+                <button type="button" class="btn_next">Next <span class="icon"><ion-icon name="arrow-forward-sharp"></ion-icon></span></button>
+            </div>
+            <div class="common_btns form_3_btns" style="display: none;">
+                <button type="button" class="btn_back"><span class="icon"><ion-icon name="arrow-back-sharp"></ion-icon></span>Back</button>
+                <button type="button" class="btn_next">Next <span class="icon"><ion-icon name="arrow-forward-sharp"></ion-icon></span></button>
+            </div>
+            <div class="common_btns form_4_btns" style="display: none;">
+                <button type="button" class="btn_back"><span class="icon"><ion-icon name="arrow-back-sharp"></ion-icon></span>Back</button>
+                <button type="submit" value="submit" name="submit" class="btn_done">Done</button>
+            </div>
+        </div>
+        </form>
+    </div>
+
+    <div class="modal_wrapper">
+        <div class="shadow"></div>
+        <div class="success_wrap">
+            <span class="modal_icon"><ion-icon name="checkmark-sharp"></ion-icon></span>
+            <p>You have successfully completed the registration.</p>
+        </div>
+    </div>
+    
+    <script type="text/javascript" src="{{url_for('static', filename='js/scripts.js')}}"></script>
+
+        
+</body>
+</html>
+{% endblock %}

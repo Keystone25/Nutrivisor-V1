@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <!-- Navbar -->
+    <div class="w3-top">
+        <div class="w3-bar w3-yellow w3-card">
+            <a class="w3-bar-item w3-button w3-padding-large w3-hide-medium w3-hide-large w3-right"
+                href="javascript:void(0)" onclick="myFunction()" title="Toggle Navigation Menu"><i
+                    class="fa fa-bars"></i></a>
+            <!--<a href="U_Home_page_1.html" class="w3-bar-item w3-button w3-padding-large">Home</a>
+            <a href="U_Progress.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Progress</a>
+            <a href="U_Discover.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Dicover</a>
+            <a href="#tour" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Food Adder</a>
+            <a href="U_Settings.html" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Settings</a>-->
+
+            <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Home</a>
+            <a href="{{ url_for('U_Diet_recommender')}}"
+                class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Diet Recommender</a>
+            <a href="{{ url_for('U_Discover')}}"
+                class="w3-bar-item w3-button w3-padding-large  w3-hide-small">Discover</a>
+            <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large w3-hide-small">Food
+                Scanner</a>
+            <a href="{{ url_for('U_Settings')}}"
+                class="w3-bar-item w3-button w3-padding-large w3-hide-small">Settings</a>
+            <!--<div class="w3-dropdown-hover w3-hide-small">
+        <button class="w3-padding-large w3-button" title="More">MORE <i class="fa fa-caret-down"></i></button>     
+        <div class="w3-dropdown-content w3-bar-block w3-card-4">
+          <a href="#" class="w3-bar-item w3-button">Merchandise</a> 
+          <a href="#" class="w3-bar-item w3-button">Extras</a>
+          <a href="#" class="w3-bar-item w3-button">Media</a>
+        </div>
+      </div>
+    -->
+        </div>
+    </div>
+
+    <!-- Navbar on small screens (remove the onclick attribute if you want the navbar to always show on top of the content when clicking on the links) -->
+    <div id="navDemo" class="w3-bar-block w3-white w3-border w3-hide w3-hide-large w3-hide-medium w3-top"
+        style="margin-top:46px">
+        <a href="{{ url_for('U_Home_page')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Home</a>
+        <a href="{{ url_for('U_Diet_recommender')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Diet Recommender</a>
+        <a href="{{ url_for('U_Discover')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Discover</a>
+        <a href="{{ url_for('U_Select_food')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Food Scanner</a>
+        <a href="{{ url_for('U_Settings')}}" class="w3-bar-item w3-button w3-padding-large"
+            onclick="myFunction()">Settings</a>
+    </div>
+
+
+    <!--Image end-->
+    <section style="width: 100%; height: 5vh;"></section>
+    <title>Home Page</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <link rel="stylesheet" href="style1.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        body,
+        h1,
+        h2,
+        h3,
+        h4,
+        h5,
+        h6 {
+            font-family: "Raleway", sans-serif
+        }
+
+        #chart-wrapper {
+            display: inline-block;
+            position: relative;
+            width: 100%;
+        }
+
+        input[type=text],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            margin-top: 6px;
+            margin-bottom: 16px;
+            resize: vertical;
+        }
+
+        input[type=submit] {
+            background-color: #04AA6D;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        input[type=submit]:hover {
+            background-color: #45a049;
+        }
+
+        .container {
+            border-radius: 5px;
+            background-color: #ffffff;
+            padding: 20px;
+        }
+
+
+        
+        table,tr,th,td{
+        border: 1px solid black;
+        border-collapse: collapse;
+        }
+
+
+        tr:nth-child(even) {
+        background-color: rgba(150, 212, 212, 0.4);
+        }
+
+        th:nth-child(even),td:nth-child(even) {
+        background-color: rgba(150, 212, 212, 0.4);
+        }
+    </style>
+</head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+
+<body class="w3-content" style="max-width:1600px;">
+
+    <!-- Sidebar/menu -->
+
+
+    <!-- Overlay effect when opening sidebar on small screens -->
+    <div class="w3-overlay w3-hide-large w3-animate-opacity" onclick="w3_close()" style="cursor:pointer"
+        title="close side menu" id="myOverlay"></div>
+
+    <!-- !PAGE CONTENT! -->
+    <div class="w3-main" style="margin-left:20px; margin-top: 30px;">
+        <h1><b>
+            <center>Welcome {{current_user.fname}}!</center>
+            </b></h1>
+    </div>
+
+    
+
+
+    <div class="w3-container w3-content" style="max-width:800px;margin-top:30px; margin: auto; align-content: center;">
+        <!-- The Grid -->
+        <div class="w3-row ">
+            <!-- Left Column -->
+            <!-- <div class="w3-col m7">-->
+            <!-- Profile -->
+
+            <div id="warn" class="w3-container w3-center" >
+
+                <div class="w3-panel w3-pale-red w3-display-container" >
+                    <span onclick="this.parentElement.style.display='none'"
+                    class="w3-button w3-large w3-display-topright">&times;</span>
+                    <h3>Warning!</h3>
+                    <p>"You have consumed more than your target calorie."</p>
+                  </div>
+        
+            </div>
+            <div class="w3-card w3-round w3-white w3-margin ">
+                <div class="w3-container">
+                    <h4 class="w3-center"><b>My Progress</b></h4>
+                    {% for user in users %}
+                    {% for item in daily2 %}
+                   
+                    <script>
+                        t = (parseInt({{ item.br_cal+item.lu_cal+item.di_cal }}) / parseInt({{ user.cal }})) * 100
+                        a=Math.round(t)
+                        camp= parseInt({{ item.br_cal+item.lu_cal+item.di_cal }})
+                        c=Math.round(camp) 
+                    </script>
+                    
+                
+                    {% endfor %}
+                    {% endfor %}
+
+
+
+
+                    <script>
+                        if (c>{{current_user.cal}}){
+                            on();
+                        }else {
+                            off();
+                        }
+
+                        function on() {
+                            document.getElementById("warn").style.display = "block";
+                        }
+                        function off() {
+                            document.getElementById("warn").style.display = "none";
+                        }
+
+                    </script>
+
+
+                    <div id="chart-wrapper w3-center">
+                        <canvas id="myChart" style="width:100%;max-width:600px"></canvas>
+                    </div>
+                    <script>
+                        var xValues = ["Consumed Cal", "Remaining Cal"];
+                        var yValues = [a, 100 - a];
+                        var barColors = [
+                            "#00cc66",
+                            "#0099ff"
+                        ];
+
+                        new Chart("myChart", {
+                            type: "doughnut",
+                            data: {
+                                labels: xValues,
+                                datasets: [{
+                                    backgroundColor: barColors,
+                                    data: yValues
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                legend: {
+                                    display: true,
+                                    position: 'right',
+                                    align: 'center',
+                                    labels: {
+                                        color: 'darkred',
+                                        font: {
+                                            weight: 'bold'
+                                        },
+                                    }
+                                }
+                            }
+                        });
+                    </script>
+                </div>
+                <br>
+            </div>
+
+
+            <div class="w3-card w3-round w3-white w3-margin ">
+                <div class="w3-container">
+
+                    <h4>
+                        <center><b>Calorie Info</b></center>
+                    </h4>
+                   
+
+
+
+                    <table class="w3-center w3-main w3-card"style=" margin-left:20%; margin-bottom: 30px;margin-top: 30px;">
+                        <thead>
+                          <tr>
+                            <th>Consumed Calorie</th>
+                            <th>Remaining Calorie</th>
+                            <th>Total Calorie Required</th>                
+                          </tr>
+                        </thead>
+                
+                        <tbody>
+                          
+                          <tr>
+                            <td>
+                                <script>document.write(a);</script>%
+                            </td>
+                            <td><script>document.write(100-a);</script>%</td>
+                            <td>{{current_user.cal}} Cal</td>
+                          </tr>
+
+
+                        </tbody>
+                      </table>
+                    
+                </div>
+                <br>
+            </div>
+            <!--</div>-->
+            <script>
+                // Script to open and close sidebar
+                function w3_open() {
+                    document.getElementById("mySidebar").style.display = "block";
+                    document.getElementById("myOverlay").style.display = "block";
+                }
+
+                function w3_close() {
+                    document.getElementById("mySidebar").style.display = "none";
+                    document.getElementById("myOverlay").style.display = "none";
+                }
+
+                function myFunction() {
+                    var x = document.getElementById("navDemo");
+                    if (x.className.indexOf("w3-show") == -1) {
+                        x.className += " w3-show";
+                    } else {
+                        x.className = x.className.replace(" w3-show", "");
+                    }
+                }
+            </script>
+
+
+            <!--</div> w3 row div-->
+            <!--<div class="w3-col m7">-->
+            <div class="w3-row-padding">
+                <div class="w3-col m12">
+                    <div class="w3-card w3-round w3-white">
+                        <div class="w3-container w3-padding w3-center">
+
+                            <h4>
+                                <center><b>Tips</b></center>
+                            </h4>
+                            <p id="message" style="text-align: center; color: #000">Refresh for more tips</p>
+                            <div class="centre">
+                               
+                            </div>
+                            <br>
+                            <script src="https://code.jquery.com/jquery-3.6.3.min.js"
+                                integrity="sha256-pvPw+upLPUjgMXY0G+8O0xUf+/Im1MZjXxxgOcBQBXU="
+                                crossorigin="anonymous"></script>
+                            <script>
+
+                                none();
+                               function none() {
+                                    let val = 1;
+                                    const tips = ["Base your meals on higher fibre starchy carbohydrates.", "Eat lots of fruit and veg.", "Eat more fish,including a portion of oily fish.", "Cut down on saturated fat and sugar.", "Eat less salt: no more than 6g a day for adults.", "Get active and be a healthy weight.", "Do not get thirsty.", "Do not skip breakfast.","Eat healthy and light.","Be mindful about washing your hand regularly","Every 30 minutes, get up and switch positions","Consume high-protein foods to stay alert, such as vegetables, fruit, and crackers with peanut butter","Do meditation, yoga, and deep breathing to manage stress","Make sure to eat enough fruits and vegetables to prevent constipation and dehydration.","Maintain a healthy weight.","Be mindful when selecting supplements","Drink beet juice to enhance your cardiovascular functioning","Embrace deep breathing, meditation, and regular exercise.","Get 10 minutes of daily exposure to enough sunlight","Visit Your Doctor Regularly For Checkups","Use cucumbers to avoid puffiness","Consume beneficial fats like nuts, olive oil, and avocados"];
+                                    val = (Math.floor(Math.random() * (tips.length - 1)))
+                                    document.getElementById("message").innerHTML = tips[val];
+                                    setTimeout(none, 2000);
+                                }
+                                
+                            </script>
+                            <!--<h6 class="w3-opacity">Social Media template by w3.css</h6>
+                    <p contenteditable="true" class="w3-border w3-padding">Status: Feeling Blue</p>
+                    <button type="button" class="w3-button w3-theme"><i class="fa fa-pencil"></i>  Post</button>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--Code for contact us using w3 schools
+            <div class="w3-container w3-card w3-white w3-round w3-margin"><br>
+                <div class="container">
+                    <h4>
+                        <center><b>Contact-Us</b></center>
+                    </h4>
+                    <form action="/action_page.php">
+                        <label for="fname">First Name</label>
+                        <input type="text" id="fname" name="firstname" placeholder="Your name..">
+
+                        <label for="lname">Last Name</label>
+                        <input type="text" id="lname" name="lastname" placeholder="Your last name..">
+
+                        <label for="country">Country</label>
+                        <select id="country" name="country">
+                            <option value="australia">Australia</option>
+                            <option value="canada">Canada</option>
+                            <option value="usa">USA</option>
+                        </select>
+
+                        <label for="subject">Subject</label>
+                        <textarea id="subject" name="subject" placeholder="Write something.."
+                            style="height:200px"></textarea>
+
+                        <input type="submit" value="Submit">
+                    </form>
+                </div>
+            </div>-->
+        </div>
+    </div>
+
+</body>
+
+</html>
