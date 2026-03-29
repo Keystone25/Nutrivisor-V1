@@ -1,0 +1,9 @@
+# Ignore ML model files
+*.hdf5
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore virtual environment
+.venv/
