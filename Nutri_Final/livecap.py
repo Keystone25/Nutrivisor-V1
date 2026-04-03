@@ -18,12 +18,12 @@ food_label = ''
 
 # Load model
 km = load_model(
-    r'C:/Users/mail4/OneDrive/Desktop/Nutri_Final/.venv/Nutri_Final/food_detect_model.hdf5',
+    r'C:/Users/mail4/OneDrive/Desktop/Nutrivisor/Nutrivisor-V1/Nutri_Final/food_detect_model.hdf5',
     compile=False
 )
 
 df = pd.read_csv(
-    r'C:/Users/mail4/OneDrive/Desktop/Nutri_Final/.venv/Nutri_Final/calorie_data.csv'
+    r'C:/Users/mail4/OneDrive/Desktop/Nutrivisor/Nutrivisor-V1/Nutri_Final/calorie_data.csv'
 )
 labels = list(df['categories'].values)
 
