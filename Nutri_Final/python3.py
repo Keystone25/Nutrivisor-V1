@@ -164,7 +164,7 @@ def U_Home_page():
 def U_Diet_recommender():
     quota = daily2.query.filter_by(user_id=current_user.id).first()
 
-    return render_template('select_food1.html',menu=menu.query.all(),quota=quota)
+    return render_template('select_food1.html',menu=menu.query.all(),daily=quota)
 
 @app.route('/U_Discover')
 @login_required
@@ -437,43 +437,38 @@ def confirm():
 
     quota = daily2.query.filter_by(user_id=current_user.id).first()
 
-    # If no record exists, create one
+    # Create if not exists
     if not quota:
-        quota = daily2(
-            user_id=current_user.id,
-            usr_cal=0,
-            br_item='', br_cal=0,
-            lu_item='', lu_cal=0,
-            di_item='', di_cal=0
-        )
+        quota = daily2(user_id=current_user.id,usr_cal=0,br_item='', br_cal=0,lu_item='', lu_cal=0,di_item='', di_cal=0)
         db.session.add(quota)
         db.session.commit()
 
     # Get current total calories
-    total_cal = quota.br_cal + quota.lu_cal + quota.di_cal
+    total_cal = (quota.br_cal or 0) + (quota.lu_cal or 0) + (quota.di_cal or 0)
 
-    # User target
     target = current_user.cal
 
-    # Block if already exceeded
+    # STOP if limit reached
     if total_cal >= target:
         return redirect(url_for('U_Home_page', msg="limit"))
 
-    # Add new calories
+    # Incoming data
     meal_type = request.form['type']
     cal = float(request.form['cal'])
     item = request.form['item']
 
-    # Allow adding meals anytime (overwrite logic optional)
+    # ADD (not replace)
     if meal_type == 'breakfast':
-        quota.br_item = item
-        quota.br_cal = cal
+        quota.br_item = (quota.br_item + ", " + item) if quota.br_item else item
+        quota.br_cal = (quota.br_cal or 0) + cal
+
     elif meal_type == 'lunch':
-        quota.lu_item = item
-        quota.lu_cal = cal
+        quota.lu_item = (quota.lu_item + ", " + item) if quota.lu_item else item
+        quota.lu_cal = (quota.lu_cal or 0) + cal
+
     elif meal_type == 'dinner':
-        quota.di_item = item
-        quota.di_cal = cal
+        quota.di_item = (quota.di_item + ", " + item) if quota.di_item else item
+        quota.di_cal = (quota.di_cal or 0) + cal
 
     db.session.commit()
 
