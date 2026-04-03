@@ -101,13 +101,14 @@ class menu(db.Model):  #this is a table named menu inside the menu1 database for
 
 class daily2(db.Model):#this is a table named daily2 inside the menu1 database for users
     id = db.Column('daily_id', db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.u_id')) 
     usr_cal = db.Column(db.Float)
-    br_item = db.Column(db.String(50))
-    br_cal = db.Column(db.Float)
-    lu_item = db.Column(db.String(50))
-    lu_cal = db.Column(db.Float)
-    di_item = db.Column(db.String(50))
-    di_cal = db.Column(db.Float )
+    br_item = db.Column(db.String(50), default='')
+    br_cal = db.Column(db.Float, default=0.0)
+    lu_item = db.Column(db.String(50), default='')
+    lu_cal = db.Column(db.Float, default=0.0)
+    di_item = db.Column(db.String(50), default='')
+    di_cal = db.Column(db.Float, default=0.0)
 
 class Feed(db.Model):
     id = db.Column('feed_id', db.Integer, primary_key=True)
@@ -122,14 +123,18 @@ def main_all():
 @app.route('/U_Home_page')
 @login_required
 def U_Home_page():
-    return render_template('U_Home_page_1.html',menu=menu.query.all(), users=User.query.all(), daily2=daily2.query.all())
+    user_data = daily2.query.filter_by(user_id=current_user.id).first()
+    return render_template('U_Home_page_1.html',menu=menu.query.all(),user=current_user,daily=user_data)
 
 @app.route('/U_Diet_Recommender')
 @login_required
 def U_Diet_recommender():
-    return render_template('select_food1.html',menu=menu.query.all(), users=User.query.all(), daily2=daily2.query.all(),quota = daily2.query.all())
+    quota = daily2.query.filter_by(user_id=current_user.id).first()
+
+    return render_template('select_food1.html',menu=menu.query.all(),quota=quota)
 
 @app.route('/U_Discover')
+@login_required
 def U_Discover():
     return render_template('U_Discover.html',menu=menu.query.all(), users=User.query.all(), daily2=daily2.query.all())
 
@@ -394,24 +399,25 @@ def live_capture():
 
 
 @app.route('/confirm', methods=['GET', 'POST'])
+@login_required
 def confirm():
     if request.method == 'POST':
 
-        quota = daily2.query.all()
+        quota = daily2.query.filter_by(user_id=current_user.id).first()
+
         if request.form['type'] == 'breakfast':
-            quota[-1].br_cal = request.form['cal']
-            quota[-1].br_item = request.form['item']
+            quota.br_cal = request.form['cal']
+            quota.br_item = request.form['item']
         elif request.form['type'] == 'lunch':
-            quota[-1].lu_cal = request.form['cal']
-            quota[-1].lu_item = request.form['item']
+            quota.lu_cal = request.form['cal']
+            quota.lu_item = request.form['item']
         else:
-            quota[-1].di_cal = request.form['cal']
-            quota[-1].di_item = request.form['item']
+            quota.di_cal = request.form['cal']
+            quota.di_item = request.form['item']
 
         db.session.commit()
-        #flasneh('Record was successfully added')
+
         return redirect(url_for('U_Home_page'))
-    return render_template('U_Home_page_1.html') 
  
 
 @app.route('/signup', methods=['GET','POST'])
@@ -509,13 +515,16 @@ def login():
 
         
 
-        d1 = datetime.strptime(previous, '%d-%m-%Y')
-        d2 = datetime.strptime(ind_date, '%d-%m-%Y')
+        quota = daily2.query.filter_by(user_id=current_user.id).all()
 
-        delta = d2-d1
-
-        if delta.days>=1:
-            quota = daily2(br_item='',br_cal='0.0',lu_item='',lu_cal='0.0',di_item='',di_cal='0.0')
+        # if no record exists, create one
+        if not quota:
+            quota = daily2(
+                user_id=current_user.id,
+                br_item='', br_cal=0.0,
+                lu_item='', lu_cal=0.0,
+                di_item='', di_cal=0.0
+            )
             db.session.add(quota)
             db.session.commit()
 
@@ -523,13 +532,12 @@ def login():
         db.session.add(log)
         db.session.commit()
 
-
         if current_user.utype == "user":
             return redirect(url_for('U_Home_page'))
         elif current_user.utype == "admin":
             return redirect(url_for('User_database'))
-    else:
-        return render_template('login.html')
+
+    return render_template('login.html')
 
 
 
