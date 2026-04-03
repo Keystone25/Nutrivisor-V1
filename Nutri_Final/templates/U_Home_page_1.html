@@ -167,37 +167,33 @@
             <div class="w3-card w3-round w3-white w3-margin ">
                 <div class="w3-container">
                     <h4 class="w3-center"><b>My Progress</b></h4>
-                    {% for user in users %}
-                    {% for item in daily2 %}
+                    <script>
+                        let total = {{ (daily.br_cal or 0) + (daily.lu_cal or 0) + (daily.di_cal or 0) }};
+                        let target = {{ current_user.cal }};
+                        let a = Math.round((total / target) * 100);
+                        let c = Math.round(total);
+                    </script>
                    
                     <script>
-                        t = (parseInt({{ item.br_cal+item.lu_cal+item.di_cal }}) / parseInt({{ user.cal }})) * 100
-                        a=Math.round(t)
-                        camp= parseInt({{ item.br_cal+item.lu_cal+item.di_cal }})
-                        c=Math.round(camp) 
+                        let total_cal = {{ daily.br_cal + daily.lu_cal + daily.di_cal }};
+                        let user_cal = {{ current_user.cal }};
+
+                        let t = (total_cal / user_cal) * 100;
+                        let a = Math.round(t);
+                        let c = Math.round(total_cal);
                     </script>
                     
                 
-                    {% endfor %}
-                    {% endfor %}
 
 
 
 
                     <script>
-                        if (c>{{current_user.cal}}){
-                            on();
-                        }else {
-                            off();
-                        }
-
-                        function on() {
+                        if (c > {{ current_user.cal }}) {
                             document.getElementById("warn").style.display = "block";
-                        }
-                        function off() {
+                        }else {
                             document.getElementById("warn").style.display = "none";
                         }
-
                     </script>
 
 
