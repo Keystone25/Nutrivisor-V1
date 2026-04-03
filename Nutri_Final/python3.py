@@ -102,6 +102,7 @@ class menu(db.Model):  #this is a table named menu inside the menu1 database for
 class daily2(db.Model):#this is a table named daily2 inside the menu1 database for users
     id = db.Column('daily_id', db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.u_id')) 
+    date = db.Column(db.String(20))
     usr_cal = db.Column(db.Float)
     br_item = db.Column(db.String(50), default='')
     br_cal = db.Column(db.Float, default=0.0)
@@ -123,8 +124,40 @@ def main_all():
 @app.route('/U_Home_page')
 @login_required
 def U_Home_page():
-    user_data = daily2.query.filter_by(user_id=current_user.id).first()
-    return render_template('U_Home_page_1.html',menu=menu.query.all(),user=current_user,daily=user_data)
+
+    today = datetime.now(timezone("Asia/Kolkata")).strftime('%d-%m-%Y')
+
+    quota = daily2.query.filter_by(user_id=current_user.id).first()
+
+    # Create if not exists
+    if not quota:
+        quota = daily2(user_id=current_user.id,date=today,br_item='', br_cal=0,lu_item='', lu_cal=0,di_item='', di_cal=0)
+        db.session.add(quota)
+        db.session.commit()
+
+    # RESET IF NEW DAY
+    if quota.date != today:
+        quota.date = today
+        quota.br_item = ''
+        quota.br_cal = 0
+        quota.lu_item = ''
+        quota.lu_cal = 0
+        quota.di_item = ''
+        quota.di_cal = 0
+        db.session.commit()
+
+    # CALCULATE TOTAL
+    total = (quota.br_cal or 0) + (quota.lu_cal or 0) + (quota.di_cal or 0)
+
+    # STATUS
+    if total >= current_user.cal:
+        msg = "limit"
+    elif total >= current_user.cal * 0.8:
+        msg = "warning"
+    else:
+        msg = "good"
+
+    return render_template('U_Home_page_1.html',menu=menu.query.all(),daily=quota,total=total,target=current_user.cal,msg=msg)
 
 @app.route('/U_Diet_Recommender')
 @login_required
@@ -398,26 +431,53 @@ def live_capture():
     return render_template('index1.html',menu=menu.query.all())
 
 
-@app.route('/confirm', methods=['GET', 'POST'])
+@app.route('/confirm', methods=['POST'])
 @login_required
 def confirm():
-    if request.method == 'POST':
 
-        quota = daily2.query.filter_by(user_id=current_user.id).first()
+    quota = daily2.query.filter_by(user_id=current_user.id).first()
 
-        if request.form['type'] == 'breakfast':
-            quota.br_cal = request.form['cal']
-            quota.br_item = request.form['item']
-        elif request.form['type'] == 'lunch':
-            quota.lu_cal = request.form['cal']
-            quota.lu_item = request.form['item']
-        else:
-            quota.di_cal = request.form['cal']
-            quota.di_item = request.form['item']
-
+    # If no record exists, create one
+    if not quota:
+        quota = daily2(
+            user_id=current_user.id,
+            usr_cal=0,
+            br_item='', br_cal=0,
+            lu_item='', lu_cal=0,
+            di_item='', di_cal=0
+        )
+        db.session.add(quota)
         db.session.commit()
 
-        return redirect(url_for('U_Home_page'))
+    # Get current total calories
+    total_cal = quota.br_cal + quota.lu_cal + quota.di_cal
+
+    # User target
+    target = current_user.cal
+
+    # Block if already exceeded
+    if total_cal >= target:
+        return redirect(url_for('U_Home_page', msg="limit"))
+
+    # Add new calories
+    meal_type = request.form['type']
+    cal = float(request.form['cal'])
+    item = request.form['item']
+
+    # Allow adding meals anytime (overwrite logic optional)
+    if meal_type == 'breakfast':
+        quota.br_item = item
+        quota.br_cal = cal
+    elif meal_type == 'lunch':
+        quota.lu_item = item
+        quota.lu_cal = cal
+    elif meal_type == 'dinner':
+        quota.di_item = item
+        quota.di_cal = cal
+
+    db.session.commit()
+
+    return redirect(url_for('U_Home_page'))
  
 
 @app.route('/signup', methods=['GET','POST'])
@@ -514,13 +574,14 @@ def login():
         ind_date = datetime.today().strftime('%d-%m-%Y')
 
         
-
-        quota = daily2.query.filter_by(user_id=current_user.id).all()
+        today = datetime.now(timezone("Asia/Kolkata")).strftime('%d-%m-%Y')
+        quota = daily2.query.filter_by(user_id=current_user.id).first()
 
         # if no record exists, create one
         if not quota:
             quota = daily2(
                 user_id=current_user.id,
+                date=today,
                 br_item='', br_cal=0.0,
                 lu_item='', lu_cal=0.0,
                 di_item='', di_cal=0.0
