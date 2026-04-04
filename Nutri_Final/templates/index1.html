@@ -1,79 +1,167 @@
 <!DOCTYPE html>
 <html>
-
 <head>
     <title>NutriVisor</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/w3.css') }}">
 
     <style>
         body {
-            background: #f5f7fa;
+            background: linear-gradient(135deg, #e3fdf5, #ffe6fa);
             font-family: "Segoe UI", sans-serif;
+            text-align: center;
         }
 
-        .card {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 20px;
-            border-radius: 12px;
+        h2 {
+            font-weight: 600;
+            margin-top: 20px;
+        }
+
+        .camera-card {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            width: 750px;
+            margin: 30px auto;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
         }
 
         img {
+            border-radius: 15px;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 15px;
+        }
+
+        /* 🔥 POPUP */
+        .popup-card {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 25px;
+            width: 340px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3);
+            display: none;
+            animation: pop 0.4s ease;
+        }
+
+        @keyframes pop {
+            from { transform: translate(-50%, -60%) scale(0.7); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+
+        .nutri-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .nutri-box {
+            background: #f7f7f7;
+            padding: 8px;
             border-radius: 10px;
-            margin-top: 10px;
         }
 
         .btn {
-            margin: 10px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .btn-green {
+            background: #00c853;
+            color: white;
+        }
+
+        .btn-red {
+            background: #ff5252;
+            color: white;
         }
     </style>
 </head>
 
 <body>
 
-<div class="w3-card w3-white card w3-center">
+<div class="camera-card">
+    <h2>🍏 NutriVisor AI Scanner</h2>
+    <p style="color:#555;">Point camera at food</p>
 
-    <h2>NutriVisor</h2>
-    <p>Capture food and detect instantly</p>
-
-    <!-- Buttons -->
-<form method="post" action="{{ url_for('tasks') }}">
-    <input class="w3-button w3-red w3-round btn" type="submit" value="Capture" name="click">
-    <input class="w3-button w3-grey w3-round btn" type="submit" value="Clear" name="click">
-</form>
-
-<!-- Back button -->
-<div style="margin-top:10px;">
-    <a href="http://127.0.0.1:5100/U_Home_page" 
-       class="w3-button w3-yellow w3-round">
-       ⬅ Back
-    </a>
+    <img src="{{ url_for('video_feed') }}">
 </div>
-    <hr>
 
-    <!-- Live Camera -->
-    <h4>Live Camera</h4>
-    <img src="{{ url_for('video_feed') }}" width="60%">
+<!-- 🔥 POPUP -->
+<div id="popup" class="popup-card">
 
-    <!-- Captured -->
-    <h4>Captured</h4>
-    <img src="{{ url_for('capture_snap') }}" width="60%">
+    <h3 id="foodName"></h3>
 
-    <!-- Result -->
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-        {% for message in messages %}
-            <div class="w3-green w3-padding w3-round" style="margin-top:15px;">
-                {{ message }}
-            </div>
-        {% endfor %}
-    {% endif %}
-    {% endwith %}
+    <div id="nutritionBlock"></div>
+
+    <p id="suggestion"></p>
+
+    <button class="btn btn-green" onclick="scanAgain()">Scan Again</button>
 
 </div>
+
+<script>
+
+document.addEventListener("visibilitychange", function () {
+    if (!document.hidden) {
+        // User came back → reload camera
+        let img = document.querySelector("img");
+        img.src = "/video_feed?" + new Date().getTime();
+    }
+});
+
+
+let shown = false;
+
+setInterval(() => {
+    fetch('/detect_status')
+    .then(res => res.json())
+    .then(data => {
+
+        if (data.detected && !shown) {
+
+            shown = true;
+
+            document.getElementById("foodName").innerText = "🍽 " + data.food;
+
+            if (data.nutrition) {
+                document.getElementById("nutritionBlock").innerHTML = `
+                    <div class="nutri-grid">
+                        <div class="nutri-box">🔥 Cal ${data.nutrition.calories}</div>
+                        <div class="nutri-box">🥩 Protein ${data.nutrition.protein}</div>
+                        <div class="nutri-box">🍞 Carbs${data.nutrition.carbs}</div>
+                        <div class="nutri-box">🧈 Fat${data.nutrition.fat}</div>
+                    </div>
+                `;
+
+                document.getElementById("suggestion").innerText = data.nutrition.suggestion;
+
+            } else {
+                document.getElementById("nutritionBlock").innerHTML = "<p>No data found</p>";
+            }
+
+            document.getElementById("popup").style.display = "block";
+        }
+
+    });
+}, 800);
+
+function scanAgain() {
+    fetch('/reset');
+    location.reload();
+}
+
+window.addEventListener("beforeunload", function () {
+    navigator.sendBeacon('/stop_camera');
+});
+
+</script>
 
 </body>
 </html>
