@@ -81,6 +81,25 @@
             background: #ff5252;
             color: white;
         }
+
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: 0.3s;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+            background: #f1f1f1;
+        }
     </style>
 </head>
 
@@ -89,6 +108,7 @@
 <div class="camera-card">
     <h2>🍏 NutriVisor AI Scanner</h2>
     <p style="color:#555;">Point camera at food</p>
+    <button onclick="goHome()" class="back-btn">← Home</button>
 
     <img src="{{ url_for('video_feed') }}">
 </div>
@@ -135,12 +155,12 @@ setInterval(() => {
                     <div class="nutri-grid">
                         <div class="nutri-box">🔥 Cal ${data.nutrition.calories}</div>
                         <div class="nutri-box">🥩 Protein ${data.nutrition.protein}</div>
-                        <div class="nutri-box">🍞 Carbs${data.nutrition.carbs}</div>
-                        <div class="nutri-box">🧈 Fat${data.nutrition.fat}</div>
+                        <div class="nutri-box">🍞 Carbs ${data.nutrition.carbs}</div>
+                        <div class="nutri-box">🧈 Fat ${data.nutrition.fat}</div>
                     </div>
                 `;
 
-                document.getElementById("suggestion").innerText = data.nutrition.suggestion;
+                document.getElementById("suggestion").innerText = "✨ " + data.nutrition.suggestion;
 
             } else {
                 document.getElementById("nutritionBlock").innerHTML = "<p>No data found</p>";
@@ -160,6 +180,11 @@ function scanAgain() {
 window.addEventListener("beforeunload", function () {
     navigator.sendBeacon('/stop_camera');
 });
+
+function goHome() {
+    fetch('/stop_camera');
+    window.location.href = "/U_Home_page";
+}
 
 </script>
 
