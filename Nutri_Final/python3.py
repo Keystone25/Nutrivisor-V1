@@ -8,9 +8,11 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import Flask, render_template, Response, request, flash, redirect, url_for
 import cv2
 import os
+os.environ["TF_USE_LEGACY_KERAS"] = "1"
+import time
+from tensorflow.keras.models import load_model
 import glob
 from PIL import Image
-from keras.models import load_model
 import pandas as pd
 from keras.utils import img_to_array
 import numpy as np
@@ -111,11 +113,122 @@ class daily2(db.Model):#this is a table named daily2 inside the menu1 database f
     di_item = db.Column(db.String(50), default='')
     di_cal = db.Column(db.Float, default=0.0)
 
+class Nutrition(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    food_name = db.Column(db.String(100), unique=True)
+    calories = db.Column(db.Float)
+    protein = db.Column(db.Float)
+    carbs = db.Column(db.Float)
+    fat = db.Column(db.Float)
+    fiber = db.Column(db.Float)
+    category = db.Column(db.String(20))  # 'healthy' or 'unhealthy'
+    suggestion = db.Column(db.String(200))
+
+
 class Feed(db.Model):
     id = db.Column('feed_id', db.Integer, primary_key=True)
     name = db.Column(db.String(100))
     message = db.Column(db.String(600))
     timestamp = db.Column(db.String(50))
+
+
+# =========================
+# CAMERA + AI MODEL
+# =========================
+camera = None
+
+food_label = ''
+captured_frame = None
+detection_done = False
+last_capture_time = 0
+
+COOLDOWN = 3
+
+
+model = load_model('C:/Users/mail4/OneDrive/Desktop/Nutrivisor/Nutrivisor-V1/Nutri_Final/food_detect_model.hdf5', compile=False)
+
+df = pd.read_csv('C:/Users/mail4/OneDrive/Desktop/Nutrivisor/Nutrivisor-V1/Nutri_Final/calorie_data.csv')
+labels = list(df['categories'].values)
+
+
+def gen_frames():
+    global camera, food_label, captured_frame, detection_done, last_capture_time
+
+    frame_count = 0  #  for skipping frames
+
+    if camera is None or not camera.isOpened():
+        camera = cv2.VideoCapture(0)
+        print("Camera initialized")
+    while True:
+        success, frame = camera.read()
+        if not success:
+            continue
+
+        frame = cv2.flip(frame, 1)
+        frame_count += 1
+
+        #  FREEZE FRAME AFTER DETECTION
+        if detection_done:
+            if captured_frame is not None:
+                ret, buffer = cv2.imencode('.jpg', captured_frame)
+                frame_bytes = buffer.tobytes()
+
+                yield (b'--frame\r\n'
+                       b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+            continue
+
+        # =========================
+        #  FRAME SKIPPING (KEY FOR PERFORMANCE)
+        # =========================
+        if frame_count % 5 != 0:
+            ret, buffer = cv2.imencode('.jpg', frame)
+            frame_bytes = buffer.tobytes()
+
+            yield (b'--frame\r\n'
+                   b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+            continue
+
+        # =========================
+        # PREPROCESS (LIGHTWEIGHT)
+        # =========================
+        roi = cv2.resize(frame, (224, 224))   #  smaller = faster
+        roi = img_to_array(roi)
+        roi = roi.astype("float") / 255.0
+        roi = np.expand_dims(roi, axis=0)
+
+        # =========================
+        # MODEL PREDICTION
+        # =========================
+        pred = model.predict(roi, verbose=0)
+        ind = np.argmax(pred)
+        confidence = float(np.max(pred))
+
+        label_text = f"{labels[ind]} ({confidence:.2f})"
+
+        # =========================
+        # AUTO CAPTURE
+        # =========================
+        if confidence > 0.75 and not detection_done:
+            captured_frame = frame.copy()
+            food_label = labels[ind]
+            detection_done = True
+            last_capture_time = time.time()
+
+            print(f"[CAPTURED] {food_label} - {confidence:.2f}")
+
+        # =========================
+        # STREAM FRAME
+        # =========================
+        ret, buffer = cv2.imencode('.jpg', frame)
+        frame_bytes = buffer.tobytes()
+
+        yield (b'--frame\r\n'
+               b'Content-Type: image/jpeg\r\n\r\n' + frame_bytes + b'\r\n')
+        
+# =========================
+# ROUTES
+# =========================
+
 
 @app.route('/')
 def main_all():
@@ -422,8 +535,78 @@ def edit_user(id):
 
 
 
+@app.route('/live')
+@login_required
+def index():
+    nutrition = None
+
+    if food_label:
+        nutrition = Nutrition.query.filter(
+            Nutrition.food_name.ilike(food_label)
+        ).first()
+
+    return render_template('index1.html',
+                           food_label=food_label,
+                           detected=detection_done,
+                           nutrition=nutrition)
 
 
+@app.route('/video_feed')
+@login_required
+def video_feed():
+    global camera
+
+    # Restart camera if it was released
+    if camera is None or not camera.isOpened():
+        camera = cv2.VideoCapture(0)
+        print("Camera restarted")
+
+    return Response(gen_frames(),
+                    mimetype='multipart/x-mixed-replace; boundary=frame')
+
+
+@app.route('/reset')
+@login_required
+def reset():
+    global food_label, captured_frame, detection_done
+    food_label = ''
+    captured_frame = None
+    detection_done = False
+    return redirect(url_for('index'))
+
+@app.route('/detect_status')
+@login_required
+def detect_status():
+
+    nutrition = None
+
+    if food_label:
+        nutrition = Nutrition.query.filter(
+            Nutrition.food_name.ilike(f"%{food_label}%")
+        ).first()
+
+    return {
+        "detected": detection_done,
+        "food": food_label,
+        "nutrition": {
+            "calories": nutrition.calories if nutrition else None,
+            "protein": nutrition.protein if nutrition else None,
+            "carbs": nutrition.carbs if nutrition else None,
+            "fat": nutrition.fat if nutrition else None,
+            "suggestion": nutrition.suggestion if nutrition else "No data available"
+        } if nutrition else None
+    }
+
+@app.route('/stop_camera', methods=['POST'])
+@login_required
+def stop_camera():
+    global camera
+
+    if camera.isOpened():
+        camera.release()
+        print("Camera released")
+
+    return {"status": "stopped"}
 
 @app.route('/live_capture')
 @login_required
