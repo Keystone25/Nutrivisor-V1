@@ -727,12 +727,17 @@ def confirm():
     meal_type = request.form['type']
     cal = float(request.form['cal'])
     item = request.form['item']
-    gl = float(request.form['gl'])
 
-    # FINAL GUARD (MANDATORY)
-    if current_user.diabetes_type != "none" and gl > 20:
-        flash("Not suitable for diabetic patients")
-        return redirect(url_for('U_Diet_recommender'))
+    selected_food = menu.query.filter_by(item=item).first()
+
+    if selected_food:
+        gi = selected_food.glycemic_index or 50
+        carbs = selected_food.carbs or 0
+        gl = (gi * carbs) / 100
+
+        if current_user.diabetes_type != "none" and gl > 20:
+            flash("Not suitable for diabetic patients")
+            return redirect(url_for('U_Diet_recommender'))
     # STOP if limit reached
     if total_cal >= target:
         return redirect(url_for('U_Home_page', msg="limit"))

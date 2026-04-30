@@ -84,8 +84,8 @@
                         <th>MEAL TYPE</th>
                         <th>ALLERGEN1</th>
                         <th>ALLERGEN2</th>
-                        <th>RISK1</th>
-                        <th>RISK2</th>
+                        <th>GLYCEMIC INDEX</th>
+                        <th>CARBS</th>
                         <th>IMGPATH</th>
                     </tr>
                 </thead>
@@ -100,8 +100,8 @@
                         <td>{{ menus.meal }}</td>
                         <td>{{ menus.allergen1 }}</td>
                         <td>{{ menus.allergen2 }}</td>
-                        <td>{{ menus.risk1 }}</td>
-                        <td>{{ menus.risk2 }}</td>
+                        <td>{{ menus.glycemic_index }}</td>
+                        <td>{{ menus.carbs }}</td>
                         <td>{{ menus.imgpath }}</td>
                         <td><a onclick="return popup();" class="fa fa-trash w3-button w3-text-red w3-large  " href="{{ url_for('delete_menu_item', id=menus.id) }}"></a>
                             <a class="fa fa-pencil w3-button w3-text-blue w3-large " href="{{ url_for('edit_food', id=menus.id) }}"></a>
