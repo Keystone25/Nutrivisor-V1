@@ -110,48 +110,60 @@
     <div class="w3-main w3-card scrollmenu " style="margin-left:30px; margin-right: 30px;margin-top: 30px; ">
 
       <table class="w3-center w3-main w3-card"
-        style="margin-left:12%; margin-right: 30px;margin-bottom: 30px;margin-top: 30px;">
+        style="margin-left:15%; margin-right: 30px;margin-bottom: 30px;margin-top: 30px;">
         <thead>
           <tr>
-            <th>ITEM</th>
-            <th>STANDARD WEIGHT(g)</th>
-            <th>CALORIES PER 100g</th>
-            <th>MEAL TYPE</th>
-            <th>SUMMARY</th>
+            <th>Item</th>
+            <th>Glycemic Index</th>
+            <th>Glycemic Load</th>
+            <th>Calories</th>
+            <th>Meal Type</th>
+            <th>Recommendation</th>
+            <th>Action</th>
 
 
           </tr>
         </thead>
 
         <tbody>
-          {% for menus in menu %}
-          
-          {% if menus.allergen1 != current_user.allergy1
-                and menus.allergen2 != current_user.allergy1
-                and menus.allergen1 != current_user.allergy2
-                and menus.allergen2 != current_user.allergy2
-                and menus.risk1 != current_user.health_issues1
-                and menus.risk2 != current_user.health_issues1 %}
+          {% for f in menu %}
           <tr>
             <form action='/confirm' method="post">
-              <td> <img src="{{menus.imgpath}}" style="width:200px; "></td>
-              <td>{{ menus.stdwt }}</td>
-              <td>{{ menus.cal100 }}</td>
-              <td> <input type="text" id="type" name="type" value="{{menus.meal}}" readonly><br><br></td>
 
               <td>
-
-                <label for="item">Item:</label>
-                <input type="text" id="item" name="item" value="{{menus.item}}" readonly><br><br>
-                <label for="cal">Calories:</label>
-                <input type="text" id="cal" name="cal" value="{{menus.cal}}" readonly><br><br>
+                <img src="{{ f.food.imgpath }}" style="width:200px;"><br>
+                {{ f.food.item }}
               </td>
-              <td><input type="submit" value="Add Meal"></td>
+
+              <td>{{ f.gi }}</td>
+              <td>{{ f.gl|round(1) }}</td>
+              <td>{{ f.food.cal }}</td>
+              <td>{{ f.food.meal }}</td>
+              <!-- Recommendation logic -->
+              <td>
+                {% if f.gl <= 10 %}
+                  <span style="color:green;"><b>Excellent</b></span>
+                {% elif f.gl <= 20 %}
+                  <span style="color:orange;"><b>Moderate</b></span>
+                {% else %}
+                  <span style="color:red;"><b>Avoid</b></span>
+                {% endif %}
+              </td>
+
+              <td>
+                <input type="hidden" name="type" value="{{ f.food.meal }}">
+                <input type="hidden" name="item" value="{{ f.food.item }}">
+                <input type="hidden" name="cal" value="{{ f.food.cal }}">
+
+                {% if f.gl <= 20 %}
+                  <input type="submit" value="Add Meal">
+                {% else %}
+                  <button disabled style="background:red;color:white;">Not Recommended</button>
+                {% endif %}
+              </td>
+
             </form>
-
           </tr>
-
-          {% endif %}
           {% endfor %}
 
         </tbody>
