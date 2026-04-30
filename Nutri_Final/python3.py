@@ -68,8 +68,8 @@ class User(UserMixin,db.Model):
      bodytype = db.Column(db.String(10))
      activity = db.Column(db.String(20))
      goal = db.Column(db.String(20))
-     health_issues1 = db.Column(db.String(10), default='')
-     health_issues2 = db.Column(db.String(10), default='')
+     diabetes_type = db.Column(db.String(20), default='none')
+     gi_preference = db.Column(db.String(10), default='medium') 
      allergy1 = db.Column(db.String(100), default='')
      allergy2 = db.Column(db.String(100), default='')
      cal = db.Column(db.Float())
@@ -93,8 +93,8 @@ class menu(db.Model):  #this is a table named menu inside the menu1 database for
     meal = db.Column(db.String(50))
     allergen1 = db.Column(db.String(50), default='')
     allergen2 = db.Column(db.String(50), default='')
-    risk1 = db.Column(db.String(50), default='')
-    risk2 = db.Column(db.String(50), default='')
+    glycemic_index = db.Column(db.Integer, default=50)
+    carbs = db.Column(db.Float, default=0.0) 
     imgpath = db.Column(db.String(100), default='')
 
 
@@ -272,12 +272,101 @@ def U_Home_page():
 
     return render_template('U_Home_page_1.html',menu=menu.query.all(),daily=quota,total=total,target=current_user.cal,msg=msg)
 
+
 @app.route('/U_Diet_Recommender')
 @login_required
 def U_Diet_recommender():
+
+    def calculate_gl(gi, carbs):
+        return (gi * carbs) / 100
+
+    # ✅ Diabetes thresholds (clean + scalable)
+    limits = {
+        "type2": (55, 20),
+        "type1": (60, 25),
+        "prediabetes": (50, 15),
+        "gestational": (45, 10),
+        "none": (100, 100)
+    }
+
+    gi_limit, gl_limit = limits.get(current_user.diabetes_type, (100, 100))
+
     quota = daily2.query.filter_by(user_id=current_user.id).first()
 
-    return render_template('select_food1.html',menu=menu.query.all(),daily=quota)
+    # ✅ Remaining calories (for ranking)
+    total_cal = (quota.br_cal or 0) + (quota.lu_cal or 0) + (quota.di_cal or 0)
+    remaining_calories = (current_user.cal or 0) - total_cal
+
+    # ✅ Get all foods (NO pre-filtering here)
+    foods = menu.query.all()
+
+    filtered_foods = []
+
+    # ✅ Scoring function (ranking logic)
+    def calculate_score(food):
+        gi = food.glycemic_index or 50
+        carbs = food.carbs or 0
+        cal = float(food.cal or 0)
+
+        gl = calculate_gl(gi, carbs)
+
+        # Base diabetic-friendly scoring
+        score = (
+            (gl * 0.4) +
+            (carbs * 0.25) +
+            (gi * 0.2) +
+            (cal * 0.15)
+        )
+
+        # 🔥 Personalization
+        if remaining_calories < 300:
+            score += cal * 0.2  # penalize high calorie
+
+        return score
+
+    # =========================
+    # FILTER LOOP
+    # =========================
+    for food in foods:
+
+        # ✅ Allergy filter (safe)
+        if current_user.allergy1 and food.allergen1:
+            if current_user.allergy1.lower() in food.allergen1.lower():
+                continue
+
+        if current_user.allergy2 and food.allergen2:
+            if current_user.allergy2.lower() in food.allergen2.lower():
+                continue
+
+        gi = food.glycemic_index or 50
+        carbs = food.carbs or 0
+        gl = calculate_gl(gi, carbs)
+
+        # ✅ GI filter
+        if current_user.diabetes_type != "none" and gi > gi_limit:
+            continue
+
+        # ✅ GL filter
+        if current_user.diabetes_type != "none" and gl > gl_limit:
+            continue
+
+        # ✅ Calculate ranking score
+        score = calculate_score(food)
+
+        filtered_foods.append({"food": food,"gi": gi,"gl": gl,"score": score })
+
+    # =========================
+    # SORT (ranking)
+    # =========================
+    filtered_foods.sort(key=lambda x: x["score"])  # lowest score = best
+
+    # Extract only food objects for UI
+    ranked_foods = filtered_foods
+
+    print(f"Total foods: {len(foods)}")
+    print(f"Filtered foods: {len(ranked_foods)}")
+
+    return render_template("select_food1.html", menu=filtered_foods, daily=quota)
 
 @app.route('/U_Discover')
 @login_required
@@ -421,7 +510,7 @@ def new2():
 
         food = menu(item=request.form['item'], cal=request.form['cal'], stdwt=request.form['stdwt'],
                 cal100=cal100_, meal=request.form['meal'], allergen1=request.form['allergen1'],
-                    allergen2=request.form['allergen2'], risk1=request.form['risk1'], risk2=request.form['risk2'],
+                    allergen2=request.form['allergen2'], glycemic_index=request.form['gi'],carbs=request.form['carbs'],
                     imgpath=str(path1))
 
         db.session.add(food)
@@ -462,11 +551,11 @@ def new1():
             bodytype = request.form.get('bdy')
             activity = request.form.get('act')
             goal = request.form.get('goal')
-            health_issues1=request.form.get('health_issues1')
-            health_issues2=request.form.get('health_issues2')
+            diabetes_type = request.form.get('diabetes_type')
+            gi_preference = request.form.get('gi_preference')
             allergy1=request.form.get('allergy1')
             allergy2=request.form.get('allergy2') 
-        new_user1 = User(fname=fname, lname=lname, email=email, phone=phone,dob=dob,password=generate_password_hash(password, method='pbkdf2:sha256'),weight=weight,height=height,age=age,gender=gender,bodytype=bodytype,activity=activity,goal=goal,health_issues1=health_issues1,health_issues2=health_issues2,allergy1=allergy1,allergy2=allergy2,cal=cal_, fat=fat_, protein=protein_, carbs=carbs_)
+        new_user1 = User(fname=fname, lname=lname, email=email, phone=phone,dob=dob,password=generate_password_hash(password, method='pbkdf2:sha256'),weight=weight,height=height,age=age,gender=gender,bodytype=bodytype,activity=activity,goal=goal,diabetes_type=diabetes_type,gi_preference=gi_preference,allergy1=allergy1,allergy2=allergy2,cal=cal_, fat=fat_, protein=protein_, carbs=carbs_)
         if new_user1:
                 db.session.add(new_user1)
                 db.session.commit()
@@ -487,8 +576,8 @@ def edit_food(id):
         item.meal = request.form['meal']
         item.allergen1 = request.form['allergen1']
         item.allergen2 = request.form['allergen2']
-        item.risk1 = request.form['risk1']
-        item.risk2 = request.form['risk2']
+        item.glycemic_index = request.form['glycemic_index']
+        item.carbs = request.form['carbs']
         item.imgpath = request.form['img']
         
         db.session.commit()
@@ -517,13 +606,13 @@ def edit_user(id):
         user.goal = request.form['goal']
         user.bodytype = request.form['bodytype']
         user.activity = request.form['act']
+        user.diabetes_type = request.form['diabetes_type']
+        user.gi_preference = request.form['gi_preference']
         user.allergy1 = request.form['allergy1']
         user.allergy2 = request.form['allergy2']
-        user.health_issues1 = request.form['health_issues1']
-        user.health_issues2 = request.form['health_issues2']
         user.cal = request.form['cal']
         user.fat = request.form['fat']
-        user.protien = request.form['protein']
+        user.protein = request.form['protein']
         user.carbs = request.form['carbs']
         
         
@@ -618,6 +707,9 @@ def live_capture():
 @login_required
 def confirm():
 
+    def calculate_gl(gi, carbs):
+        return (gi * carbs) / 100
+    
     quota = daily2.query.filter_by(user_id=current_user.id).first()
 
     # Create if not exists
@@ -630,15 +722,21 @@ def confirm():
     total_cal = (quota.br_cal or 0) + (quota.lu_cal or 0) + (quota.di_cal or 0)
 
     target = current_user.cal
-
-    # STOP if limit reached
-    if total_cal >= target:
-        return redirect(url_for('U_Home_page', msg="limit"))
-
     # Incoming data
     meal_type = request.form['type']
     cal = float(request.form['cal'])
     item = request.form['item']
+    gl = float(request.form['gl'])
+
+    # FINAL GUARD (MANDATORY)
+    if current_user.diabetes_type != "none" and gl > 20:
+        flash("Not suitable for diabetic patients")
+        return redirect(url_for('U_Diet_recommender'))
+    # STOP if limit reached
+    if total_cal >= target:
+        return redirect(url_for('U_Home_page', msg="limit"))
+
+
 
     # ADD (not replace)
     if meal_type == 'breakfast':
@@ -691,8 +789,8 @@ def signup():
             bodytype = request.form.get('bdy')
             activity = request.form.get('act')
             goal = request.form.get('goal')
-            health_issues1=request.form.get('health_issues1')
-            health_issues2=request.form.get('health_issues2')
+            diabetes_type = request.form.get('diabetes_type')
+            gi_preference = request.form.get('gi_preference')
             allergy1=request.form.get('allergy1')
             allergy2=request.form.get('allergy2') 
 
@@ -715,7 +813,7 @@ def signup():
                 return redirect(url_for('signup'))
 
         # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-            new_user = User(fname=fname, lname=lname, email=email, phone=phone,dob=dob,password=generate_password_hash(password, method='pbkdf2:sha256'),weight=weight,height=height,age=age,gender=gender,bodytype=bodytype,activity=activity,goal=goal,health_issues1=health_issues1,health_issues2=health_issues2,allergy1=allergy1,allergy2=allergy2,cal=cal_, fat=fat_, protein=protein_, carbs=carbs_)
+            new_user = User(fname=fname, lname=lname, email=email, phone=phone,dob=dob,password=generate_password_hash(password, method='pbkdf2:sha256'),weight=weight,height=height,age=age,gender=gender,bodytype=bodytype,activity=activity,goal=goal,diabetes_type=diabetes_type,gi_preference=gi_preference,allergy1=allergy1,allergy2=allergy2,cal=cal_, fat=fat_, protein=protein_, carbs=carbs_)
             if new_user:
                     db.session.add(new_user)
                     db.session.commit()
