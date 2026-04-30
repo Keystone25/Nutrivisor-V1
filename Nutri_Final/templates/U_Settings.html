@@ -124,7 +124,7 @@
                             <a class="nav-link" id="measurement-tab" data-toggle="pill" href="#measurement" role="tab"
                                 aria-controls="measurement" aria-selected="false">
                                 <i class="fa fa-bar-chart text-center mr-1"></i>
-                                Change Measurements
+                                Update Health Stats
                             </a>
 
 
@@ -298,6 +298,20 @@
                                                 <option value="Endomorph">Endomorph</option>
                                                 <option value="Ectomorph">Ectomorph</option>
                                                 <option value="Mesomorph">Mesomorph</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label>Diabetes Type</label>
+                                            <br>
+                                            <select class="form-control" name="diabetes_type">
+                                                <option selected value="{{diabetes_type}}"></option>
+                                                <option value="type1">Type 1</option>
+                                                <option value="type2">Type 2</option>
+                                                <option value="prediabetes">Prediabetes</option>
+                                                <option value="gestational">Gestational</option>
+                                                <option value="">NIL</option>
                                             </select>
                                         </div>
                                     </div>

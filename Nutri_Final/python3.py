@@ -418,6 +418,7 @@ def UpdateMeasure():
         curr_user.gender = request.form['gender']
         curr_user.age = request.form['age']
         curr_user.bodytype = request.form['bodytype']
+        curr_user.diabetes_type = request.form['diabetes_type']
         db.session.commit()
     return redirect(url_for('U_Settings'))
 
