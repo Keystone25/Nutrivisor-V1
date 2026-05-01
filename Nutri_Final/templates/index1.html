@@ -31,7 +31,7 @@
             margin-top: 15px;
         }
 
-        /* 🔥 POPUP */
+        /* POPUP */
         .popup-card {
             position: fixed;
             top: 50%;
@@ -113,64 +113,82 @@
     <img src="{{ url_for('video_feed') }}">
 </div>
 
-<!-- 🔥 POPUP -->
+<!-- POPUP -->
 <div id="popup" class="popup-card">
 
     <h3 id="foodName"></h3>
 
     <div id="nutritionBlock"></div>
-
+    <div id="diabetic-status" style="margin-top:10px;"></div>
     <p id="suggestion"></p>
 
     <button class="btn btn-green" onclick="scanAgain()">Scan Again</button>
 
 </div>
 
+
+
 <script>
 
 document.addEventListener("visibilitychange", function () {
     if (!document.hidden) {
-        // User came back → reload camera
         let img = document.querySelector("img");
         img.src = "/video_feed?" + new Date().getTime();
     }
 });
 
-
 let shown = false;
 
-setInterval(() => {
-    fetch('/detect_status')
-    .then(res => res.json())
-    .then(data => {
+setInterval(async () => {
+    const res = await fetch('/detect_status');
+    const data = await res.json();
 
-        if (data.detected && !shown) {
+    if (data.detected && !shown) {
 
-            shown = true;
+        shown = true;
 
-            document.getElementById("foodName").innerText = "🍽 " + data.food;
+        // FOOD NAME
+        document.getElementById("foodName").innerText = "🍽 " + data.food;
 
-            if (data.nutrition) {
-                document.getElementById("nutritionBlock").innerHTML = `
-                    <div class="nutri-grid">
-                        <div class="nutri-box">🔥 Cal ${data.nutrition.calories}</div>
-                        <div class="nutri-box">🥩 Protein ${data.nutrition.protein}</div>
-                        <div class="nutri-box">🍞 Carbs ${data.nutrition.carbs}</div>
-                        <div class="nutri-box">🧈 Fat ${data.nutrition.fat}</div>
-                    </div>
-                `;
+        // NUTRITION
+        if (data.nutrition) {
+            document.getElementById("nutritionBlock").innerHTML = `
+                <div class="nutri-grid">
+                    <div class="nutri-box">🔥 Cal ${data.nutrition.calories}</div>
+                    <div class="nutri-box">🥩 Protein ${data.nutrition.protein}</div>
+                    <div class="nutri-box">🍞 Carbs ${data.nutrition.carbs}</div>
+                    <div class="nutri-box">🧈 Fat ${data.nutrition.fat}</div>
+                </div>
+            `;
 
-                document.getElementById("suggestion").innerText = "✨ " + data.nutrition.suggestion;
+            document.getElementById("suggestion").innerText =
+                "✨ " + data.nutrition.suggestion;
 
-            } else {
-                document.getElementById("nutritionBlock").innerHTML = "<p>No data found</p>";
-            }
-
-            document.getElementById("popup").style.display = "block";
+        } else {
+            document.getElementById("nutritionBlock").innerHTML =
+                "<p>No data found</p>";
         }
 
-    });
+        // DIABETIC STATUS (merged here — NO second API call)
+        if (data.diabetic) {
+            let status = data.diabetic.status;
+            let message = data.diabetic.message;
+
+            let color = "gray";
+            if (status === "safe") color = "green";
+            if (status === "moderate") color = "orange";
+            if (status === "avoid") color = "red";
+
+            document.getElementById("diabetic-status").innerHTML =
+                `<b style="color:${color}">Diabetic Check: ${message}</b>`;
+        }
+
+        // SHOW POPUP
+        document.getElementById("popup").style.display = "block";
+    }
+
 }, 800);
+
 
 function scanAgain() {
     fetch('/reset');
@@ -181,8 +199,10 @@ window.addEventListener("beforeunload", function () {
     navigator.sendBeacon('/stop_camera');
 });
 
+
 function goHome() {
     fetch('/stop_camera');
+    fetch('/reset');
     window.location.href = "/U_Home_page";
 }
 

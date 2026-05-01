@@ -133,6 +133,73 @@ class Feed(db.Model):
 
 
 # =========================
+# Helper Function for diabetic staus in live capture.
+# =========================
+
+def get_diabetic_status(food_name, user):
+
+    def calculate_gl(gi, carbs):
+        return (gi * carbs) / 100
+
+    # Diabetes thresholds
+    limits = {
+        "type2": (55, 20),
+        "type1": (60, 25),
+        "prediabetes": (50, 15),
+        "gestational": (45, 10),
+        "none": (100, 100)
+    }
+
+    gi_limit, gl_limit = limits.get(user.diabetes_type, (100, 100))
+
+    # Get food from DB
+    food = menu.query.filter(menu.item.ilike(f"%{food_name}%")).first()
+
+    if not food:
+        return {
+            "status": "unknown",
+            "message": "No data available"
+        }
+
+    gi = food.glycemic_index or 50
+    carbs = food.carbs or 0
+    gl = calculate_gl(gi, carbs)
+
+    # =========================
+    # BASE HEALTH LOGIC (FOR EVERYONE)
+    # =========================
+    if gl > 20:
+        status = "avoid"
+        message = "High glycemic load"
+
+    elif gl > 10:
+        status = "moderate"
+        message = "Consume in moderation"
+
+    else:
+        status = "safe"
+        message = "Good choice"
+
+    # =========================
+    # DIABETIC STRICT RULE
+    # =========================
+    if user.diabetes_type != "none":
+        if gl > gl_limit or gi > gi_limit:
+            status = "avoid"
+            message = "Not recommended for diabetic patients"
+
+    # =========================
+    # RETURN EVERYTHING 
+    # =========================
+    return {
+        "status": status,
+        "message": message,
+        "gi": gi,
+        "gl": round(gl, 2)
+    }
+
+
+# =========================
 # CAMERA + AI MODEL
 # =========================
 camera = None
@@ -280,7 +347,7 @@ def U_Diet_recommender():
     def calculate_gl(gi, carbs):
         return (gi * carbs) / 100
 
-    # ✅ Diabetes thresholds (clean + scalable)
+    # Diabetes thresholds (clean + scalable)
     limits = {
         "type2": (55, 20),
         "type1": (60, 25),
@@ -293,16 +360,16 @@ def U_Diet_recommender():
 
     quota = daily2.query.filter_by(user_id=current_user.id).first()
 
-    # ✅ Remaining calories (for ranking)
+    # Remaining calories (for ranking)
     total_cal = (quota.br_cal or 0) + (quota.lu_cal or 0) + (quota.di_cal or 0)
     remaining_calories = (current_user.cal or 0) - total_cal
 
-    # ✅ Get all foods (NO pre-filtering here)
+    # Get all foods (NO pre-filtering here)
     foods = menu.query.all()
 
     filtered_foods = []
 
-    # ✅ Scoring function (ranking logic)
+    # Scoring function (ranking logic)
     def calculate_score(food):
         gi = food.glycemic_index or 50
         carbs = food.carbs or 0
@@ -318,7 +385,7 @@ def U_Diet_recommender():
             (cal * 0.15)
         )
 
-        # 🔥 Personalization
+        # Personalization
         if remaining_calories < 300:
             score += cal * 0.2  # penalize high calorie
 
@@ -329,7 +396,7 @@ def U_Diet_recommender():
     # =========================
     for food in foods:
 
-        # ✅ Allergy filter (safe)
+        #  Allergy filter (safe)
         if current_user.allergy1 and food.allergen1:
             if current_user.allergy1.lower() in food.allergen1.lower():
                 continue
@@ -342,15 +409,15 @@ def U_Diet_recommender():
         carbs = food.carbs or 0
         gl = calculate_gl(gi, carbs)
 
-        # ✅ GI filter
+        # GI filter
         if current_user.diabetes_type != "none" and gi > gi_limit:
             continue
 
-        # ✅ GL filter
+        # GL filter
         if current_user.diabetes_type != "none" and gl > gl_limit:
             continue
 
-        # ✅ Calculate ranking score
+        # Calculate ranking score
         score = calculate_score(food)
 
         filtered_foods.append({"food": food,"gi": gi,"gl": gl,"score": score })
@@ -669,22 +736,28 @@ def reset():
 def detect_status():
 
     nutrition = None
+    diabetic_info = None
 
     if food_label:
         nutrition = Nutrition.query.filter(
             Nutrition.food_name.ilike(f"%{food_label}%")
         ).first()
 
+        diabetic_info = get_diabetic_status(food_label, current_user)
+
     return {
         "detected": detection_done,
         "food": food_label,
+
         "nutrition": {
             "calories": nutrition.calories if nutrition else None,
             "protein": nutrition.protein if nutrition else None,
             "carbs": nutrition.carbs if nutrition else None,
             "fat": nutrition.fat if nutrition else None,
             "suggestion": nutrition.suggestion if nutrition else "No data available"
-        } if nutrition else None
+        } if nutrition else None,
+
+        "diabetic": diabetic_info
     }
 
 @app.route('/stop_camera', methods=['POST'])
@@ -835,6 +908,12 @@ def signup():
 @app.route('/login', methods=['GET','POST'])
 def login():
 
+    global food_label, captured_frame, detection_done
+
+    food_label = ''
+    captured_frame = None
+    detection_done = False
+
     log_obj = logsession.query.all()
     previous = log_obj[-1].log_date
     if request.method == 'POST':
@@ -892,6 +971,11 @@ def login():
 @login_required
 def logout():
 
+    global food_label, captured_frame, detection_done, camera
+
+    food_label = ''
+    captured_frame = None
+    detection_done = False
    
     logout_user()
     ind_time = datetime.now(timezone("Asia/Kolkata")).strftime('%H:%M:%S')
