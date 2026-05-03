@@ -117,7 +117,7 @@
             <th>Glycemic Index</th>
             <th>Glycemic Load</th>
             <th>Calories</th>
-            <th>Meal Type</th>
+            <th>Quantity</th>
             <th>Recommendation</th>
             <th>Action</th>
 
@@ -138,7 +138,7 @@
               <td>{{ f.gi }}</td>
               <td>{{ f.gl|round(1) }}</td>
               <td>{{ f.food.cal }}</td>
-              <td>{{ f.food.meal }}</td>
+              <td>{{ f.food.quantity }}</td>
               <!-- Recommendation logic -->
               <td>
                 {% if f.gl <= 10 %}
@@ -154,12 +154,7 @@
                 <input type="hidden" name="type" value="{{ f.food.meal }}">
                 <input type="hidden" name="item" value="{{ f.food.item }}">
                 <input type="hidden" name="cal" value="{{ f.food.cal }}">
-
-                {% if f.gl <= 20 %}
                   <input type="submit" value="Add Meal">
-                {% else %}
-                  <button disabled style="background:red;color:white;">Not Recommended</button>
-                {% endif %}
               </td>
 
             </form>
