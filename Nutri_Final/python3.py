@@ -96,6 +96,7 @@ class menu(db.Model):  #this is a table named menu inside the menu1 database for
     glycemic_index = db.Column(db.Integer, default=50)
     carbs = db.Column(db.Float, default=0.0) 
     imgpath = db.Column(db.String(100), default='')
+    quantity = db.Column(db.String(50))
 
 
 
@@ -269,6 +270,10 @@ def gen_frames():
         pred = model.predict(roi, verbose=0)
         ind = np.argmax(pred)
         confidence = float(np.max(pred))
+
+        print("Prediction shape:", pred.shape)
+        print("Labels count:", len(labels))
+        print("Predicted index:", ind)
 
         label_text = f"{labels[ind]} ({confidence:.2f})"
 
@@ -579,7 +584,7 @@ def new2():
         food = menu(item=request.form['item'], cal=request.form['cal'], stdwt=request.form['stdwt'],
                 cal100=cal100_, meal=request.form['meal'], allergen1=request.form['allergen1'],
                     allergen2=request.form['allergen2'], glycemic_index=request.form['gi'],carbs=request.form['carbs'],
-                    imgpath=str(path1))
+                    imgpath=str(path1),quantity=request.form['quantity'])
 
         db.session.add(food)
         db.session.commit()
